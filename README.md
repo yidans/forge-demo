@@ -6,6 +6,8 @@ Self-contained browser demo for the FORGE pipeline. The interface supports three
 - Research collaboration
 - Neighborhood mutual aid
 
+Live demo: https://yidans.github.io/forge-demo/
+
 ## Run
 
 Open `index.html` directly in a browser, or serve the folder locally:
