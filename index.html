@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FORGE EMNLP Demo</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">FORGE / EMNLP Demo</p>
+          <h1>LLM-Guided ERGM Specification, Fitting, Refinement, and Interpretation</h1>
+        </div>
+        <div class="top-actions">
+          <div class="network-picker" aria-label="Choose demo network">
+            <span class="network-label">Network</span>
+            <div id="network-picker" class="network-options"></div>
+          </div>
+          <div class="run-status" aria-live="polite">
+            <span class="status-dot"></span>
+            <span id="stage-status">Stage 0 ready</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="workspace">
+        <aside class="stage-rail" aria-label="Pipeline stages">
+          <div class="stage-title">Pipeline</div>
+          <div id="stage-list" class="stage-list"></div>
+        </aside>
+
+        <section class="main-panel" aria-labelledby="current-stage-title">
+          <div class="panel-head">
+            <div>
+              <p id="current-stage-kicker" class="kicker">Stage 0</p>
+              <h2 id="current-stage-title">Network Intake</h2>
+            </div>
+            <div class="controls" aria-label="Stage controls">
+              <button id="prev-step" class="icon-button" type="button" title="Previous stage" aria-label="Previous stage">
+                <span aria-hidden="true">&lt;</span>
+              </button>
+              <button id="play-step" class="icon-button" type="button" title="Replay pipeline" aria-label="Replay pipeline">
+                <span aria-hidden="true">&#9658;</span>
+              </button>
+              <button id="next-step" class="primary-button" type="button">
+                <span aria-hidden="true">&gt;</span>
+                <span>Next</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="canvas-row">
+            <div class="network-frame">
+              <div class="canvas-toolbar">
+                <div>
+                  <span id="network-title" class="toolbar-label">Toy School Friendship Network</span>
+                  <span id="lens-label" class="lens-pill">raw network</span>
+                </div>
+                <div id="network-legend" class="legend"></div>
+              </div>
+              <svg id="network-svg" viewBox="0 0 720 440" role="img" aria-label="Small demo network visualization"></svg>
+            </div>
+
+            <div class="stage-card">
+              <p class="card-label">Mechanism Snapshot</p>
+              <h3 id="mechanism-title">Observed ties cluster by activity group</h3>
+              <p id="mechanism-copy"></p>
+              <div id="metric-grid" class="metric-grid"></div>
+            </div>
+          </div>
+
+          <div class="evidence-grid">
+            <div class="evidence-panel">
+              <div class="panel-subhead">
+                <span>Stage Input</span>
+                <button id="copy-prompt" class="ghost-button" type="button">Copy</button>
+              </div>
+              <pre id="prompt-view" class="code-panel"></pre>
+            </div>
+            <div class="evidence-panel">
+              <div class="panel-subhead">
+                <span>Stage Output</span>
+                <span id="output-badge" class="output-badge">diagnostics</span>
+              </div>
+              <pre id="output-view" class="code-panel"></pre>
+            </div>
+          </div>
+        </section>
+
+        <aside class="right-panel" aria-label="Model evidence">
+          <section class="summary-band">
+            <p class="card-label">Final Human Theory</p>
+            <h3 id="theory-headline">Friendship is explained by shared context plus local clustering.</h3>
+            <p id="theory-copy"></p>
+          </section>
+
+          <section class="term-section">
+            <div class="panel-subhead compact">
+              <span>Current Terms</span>
+              <span id="term-count">0</span>
+            </div>
+            <div id="term-list" class="term-list"></div>
+          </section>
+
+          <section class="chart-section">
+            <div class="panel-subhead compact">
+              <span>Selection Evidence</span>
+              <span id="best-model-label">M4</span>
+            </div>
+            <div id="bic-chart" class="bic-chart"></div>
+          </section>
+
+          <section class="audit-section">
+            <div class="panel-subhead compact">
+              <span>Guardrails</span>
+              <span id="guardrail-score">0/0</span>
+            </div>
+            <div id="guardrail-list" class="guardrail-list"></div>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
