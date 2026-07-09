@@ -70,6 +70,13 @@ button {
   text-transform: uppercase;
 }
 
+.tagline {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13.5px;
+  font-weight: 650;
+}
+
 .topbar h1 {
   margin: 4px 0 0;
   max-width: 1040px;
