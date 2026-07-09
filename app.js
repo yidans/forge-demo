@@ -1268,7 +1268,7 @@ function svgEl(name, attrs = {}) {
 
 function colorForGroup(demo, group) {
   const colorVariable = demo.palette[group] || "--green";
-  return getComputedStyle(document.documentElement).getPropertyValue(colorVariable).trim() || "#2f7d68";
+  return getComputedStyle(document.documentElement).getPropertyValue(colorVariable).trim() || "#2563eb";
 }
 
 function edgeKey(edge) {

@@ -1,19 +1,19 @@
 :root {
-  --bg: #f6f4ef;
+  --bg: #eef3fb;
   --panel: #ffffff;
-  --ink: #1f2523;
-  --muted: #66716d;
-  --line: #d8d8cf;
-  --green: #2f7d68;
-  --green-soft: #dcebe5;
-  --amber: #b76f20;
-  --amber-soft: #f4e0c5;
-  --rose: #a34d63;
-  --rose-soft: #edd6dc;
-  --blue: #3d6f99;
-  --blue-soft: #d8e6ef;
-  --gray-soft: #ecebe4;
-  --shadow: 0 20px 50px rgba(37, 42, 39, 0.09);
+  --ink: #12233b;
+  --muted: #5a6b82;
+  --line: #d5e1f0;
+  --green: #2563eb;
+  --green-soft: #dbe7fe;
+  --amber: #0284c7;
+  --amber-soft: #d9edfb;
+  --rose: #6366f1;
+  --rose-soft: #e5e7ff;
+  --blue: #06b6d4;
+  --blue-soft: #cffafe;
+  --gray-soft: #eef2f8;
+  --shadow: 0 20px 50px rgba(30, 58, 95, 0.12);
 }
 
 * {
@@ -105,7 +105,7 @@ button {
   padding: 4px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fbfaf6;
+  background: #f4f8fe;
 }
 
 .network-button {
@@ -189,7 +189,7 @@ button {
   padding: 10px;
   text-align: left;
   color: var(--ink);
-  background: #fbfaf6;
+  background: #f4f8fe;
   border: 1px solid var(--line);
   border-radius: 8px;
   cursor: pointer;
@@ -295,7 +295,7 @@ button {
   height: 30px;
   padding: 0 10px;
   color: var(--muted);
-  background: #fbfaf6;
+  background: #f4f8fe;
   font-size: 12px;
   font-weight: 700;
 }
@@ -330,7 +330,7 @@ button {
 .audit-section {
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fbfaf6;
+  background: #f4f8fe;
 }
 
 .network-frame {
@@ -354,7 +354,7 @@ button {
   padding: 0 8px;
   border-radius: 999px;
   background: var(--amber-soft);
-  color: #6d4114;
+  color: #075985;
   font-size: 12px;
   font-weight: 750;
 }
@@ -397,13 +397,13 @@ button {
   min-height: 390px;
   flex: 1;
   background:
-    linear-gradient(rgba(31, 37, 35, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(31, 37, 35, 0.04) 1px, transparent 1px);
+    linear-gradient(rgba(30, 58, 95, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30, 58, 95, 0.05) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
 .edge {
-  stroke: #a5aaa4;
+  stroke: #9db3d0;
   stroke-width: 2.3;
   stroke-linecap: round;
   opacity: 0.52;
@@ -421,7 +421,7 @@ button {
 
 .node-ring {
   fill: #ffffff;
-  stroke: #2d3330;
+  stroke: #1e3a5f;
   stroke-width: 2;
 }
 
@@ -522,8 +522,8 @@ button {
   min-height: 230px;
   max-height: 314px;
   overflow: auto;
-  color: #24302c;
-  background: #fffdf8;
+  color: #12233b;
+  background: #ffffff;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 12px;
   line-height: 1.5;
@@ -539,7 +539,7 @@ button {
 
 .summary-band {
   padding: 14px;
-  background: linear-gradient(135deg, #fffdf8, #eef6f2);
+  background: linear-gradient(135deg, #ffffff, #e7f0fe);
 }
 
 .summary-band p {
