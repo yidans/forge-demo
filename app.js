@@ -121,7 +121,7 @@ const termMeanings = {
 
 const guardrailSets = {
   intake: [
-    ["pass", "No missing node attributes in the toy network"],
+    ["pass", "No missing node attributes in the network"],
     ["pass", "Undirected ties have no self-loops"],
     ["pass", "Small enough for live demo fitting"]
   ],
@@ -156,7 +156,7 @@ const networkDemos = [
   {
     id: "school",
     shortLabel: "School",
-    title: "Toy School Friendship Network",
+    title: "School Friendship Network",
     nodeKind: "students",
     tieKind: "friendship ties",
     cohortPrefix: "G",
@@ -200,7 +200,7 @@ const networkDemos = [
         id: "intake",
         number: "0",
         rail: "Network Intake",
-        subtitle: "Toy graph and diagnostics",
+        subtitle: "Graph and diagnostics",
         kicker: "Stage 0",
         title: "Network Intake",
         status: "Stage 0: diagnostics",
@@ -221,7 +221,7 @@ const networkDemos = [
           ["Null", 96.4],
           ["Observed", 81.2]
         ],
-        prompt: `dataset: toy_school
+        prompt: `dataset: school_friendship
 actors: students
 tie: undirected friendship
 node attributes: club, grade, activity
@@ -495,7 +495,7 @@ Do not infer causality.`,
   "headline": "Friendships are shaped by shared contexts and shared friends.",
   "model_grounded_interpretation": "Students are more likely to be friends when they move through the same social settings. Activity groups and grade cohorts create repeated contact, shared friends close triangles, and a few well-connected students bridge otherwise separate clusters. The model supports this as a conditional network pattern, not as proof that any single attribute causes friendship.",
   "limitations": [
-    "Toy network for demo",
+    "Small illustrative network",
     "Interpretation depends on GOF and coefficient stability"
   ]
 }`,
@@ -509,7 +509,7 @@ Do not infer causality.`,
   {
     id: "lab",
     shortLabel: "Lab",
-    title: "Toy Research Collaboration Network",
+    title: "Research Collaboration Network",
     nodeKind: "researchers",
     tieKind: "collaboration ties",
     cohortPrefix: "",
@@ -553,7 +553,7 @@ Do not infer causality.`,
         id: "intake",
         number: "0",
         rail: "Network Intake",
-        subtitle: "Toy graph and diagnostics",
+        subtitle: "Graph and diagnostics",
         kicker: "Stage 0",
         title: "Network Intake",
         status: "Stage 0: diagnostics",
@@ -574,7 +574,7 @@ Do not infer causality.`,
           ["Null", 104.8],
           ["Observed", 89.6]
         ],
-        prompt: `dataset: toy_lab
+        prompt: `dataset: research_collab
 actors: researchers
 tie: undirected collaboration
 node attributes: area, role, seniority
@@ -848,7 +848,7 @@ Do not infer causality.`,
   "headline": "Collaborations are shaped by research area, shared collaborators, and role structure.",
   "model_grounded_interpretation": "Researchers are more likely to collaborate when they work in the same area and already share collaborators. Role similarity adds another layer: peers with similar positions tend to appear together in projects. A few highly connected researchers link otherwise separate areas. The model supports this as a conditional collaboration pattern, not proof that area or role causes collaboration.",
   "limitations": [
-    "Toy network for demo",
+    "Small illustrative network",
     "Interpretation depends on GOF and coefficient stability"
   ]
 }`,
@@ -862,7 +862,7 @@ Do not infer causality.`,
   {
     id: "neighborhood",
     shortLabel: "Neighborhood",
-    title: "Toy Neighborhood Mutual Aid Network",
+    title: "Neighborhood Mutual Aid Network",
     nodeKind: "households",
     tieKind: "mutual-aid ties",
     cohortPrefix: "",
@@ -905,7 +905,7 @@ Do not infer causality.`,
         id: "intake",
         number: "0",
         rail: "Network Intake",
-        subtitle: "Toy graph and diagnostics",
+        subtitle: "Graph and diagnostics",
         kicker: "Stage 0",
         title: "Network Intake",
         status: "Stage 0: diagnostics",
@@ -926,7 +926,7 @@ Do not infer causality.`,
           ["Null", 99.3],
           ["Observed", 84.7]
         ],
-        prompt: `dataset: toy_neighborhood
+        prompt: `dataset: neighborhood_aid
 actors: households
 tie: undirected mutual-aid exchange
 node attributes: block, tenure_group, tenure_years
@@ -1200,7 +1200,7 @@ Do not infer causality.`,
   "headline": "Mutual aid is shaped by local blocks, shared neighbors, and residence history.",
   "model_grounded_interpretation": "Households are more likely to exchange help when they live in the same block and share nearby support contacts. A small number of well-connected households bridge blocks, while similar residence history adds another layer of connection. The model supports this as a conditional pattern in the aid network, not proof that block or tenure causes support.",
   "limitations": [
-    "Toy network for demo",
+    "Small illustrative network",
     "Interpretation depends on GOF and coefficient stability"
   ]
 }`,
