@@ -102,21 +102,21 @@ function hydrateIntakeStage(demo) {
 
 const termMeanings = {
   edges: "baseline tie rate",
-  'gwesp(0.5, fixed=TRUE)': "triadic closure among connected actors",
-  'gwdsp(0.5, fixed=TRUE)': "open two-path pressure",
-  'gwdegree(0.5, fixed=TRUE)': "hub and degree heterogeneity",
-  'nodematch("club")': "students in the same activity group connect more",
-  'nodematch("grade")': "same-grade friendship tendency",
-  'nodefactor("grade")': "grade-level activity differences",
-  'absdiff("activity")': "similar activity level",
-  'nodematch("area")': "same research area collaboration",
-  'nodematch("role")': "same role or status pattern",
-  'nodefactor("role")': "role-specific collaboration propensity",
-  'absdiff("seniority")': "similar seniority levels",
-  'nodematch("block")': "same neighborhood block support",
-  'nodematch("tenure_group")': "same tenure group support",
-  'nodefactor("tenure_group")': "tenure-specific support propensity",
-  'absdiff("tenure_years")': "similar length of residence"
+  'gwesp': "shared partners / closure",
+  'gwdsp': "open two-path pressure",
+  'gwdegree': "hub / degree structure",
+  'nodematch(club)': "same-club ties",
+  'nodematch(grade)': "same-grade ties",
+  'nodefactor(grade)': "grade-level activity",
+  'absdiff(activity)': "similar activity level",
+  'nodematch(area)': "same-area collaboration",
+  'nodematch(role)': "same-role ties",
+  'nodefactor(role)': "role-level activity",
+  'absdiff(seniority)': "similar seniority",
+  'nodematch(block)': "same-block support",
+  'nodematch(tenure_group)': "same tenure group",
+  'nodefactor(tenure_group)': "tenure-group activity",
+  'absdiff(tenure_years)': "similar residence tenure"
 };
 
 const guardrailSets = {
@@ -146,9 +146,9 @@ const guardrailSets = {
     ["pass", "GOF max |z| drops below 2.0"]
   ],
   interpret: [
-    ["pass", "Mechanism claims are tied to fitted terms"],
-    ["pass", "The interpretation separates evidence from caveats"],
-    ["pass", "No causal language is used"]
+    ["pass", "Claims match fitted terms"],
+    ["pass", "Caveats kept separate"],
+    ["pass", "No causal claims"]
   ]
 };
 
@@ -199,8 +199,8 @@ const networkDemos = [
       {
         id: "intake",
         number: "0",
-        rail: "Network Intake",
-        subtitle: "Graph and diagnostics",
+        rail: "Intake",
+        subtitle: "Graph checks",
         kicker: "Stage 0",
         title: "Network Intake",
         status: "Stage 0: diagnostics",
@@ -243,8 +243,8 @@ summarize network diagnostics for ERGM specification.`,
       {
         id: "library",
         number: "1",
-        rail: "Candidate Library",
-        subtitle: "Safe ERGM terms",
+        rail: "Library",
+        subtitle: "Valid terms",
         kicker: "Stage 1a",
         title: "Build an Admissible Term Library",
         status: "Stage 1a: library",
@@ -260,13 +260,13 @@ summarize network diagnostics for ERGM specification.`,
         ],
         terms: [
           "edges",
-          'gwesp(0.5, fixed=TRUE)',
-          'gwdsp(0.5, fixed=TRUE)',
-          'gwdegree(0.5, fixed=TRUE)',
-          'nodematch("club")',
-          'nodematch("grade")',
-          'nodefactor("grade")',
-          'absdiff("activity")'
+          'gwesp',
+          'gwdsp',
+          'gwdegree',
+          'nodematch(club)',
+          'nodematch(grade)',
+          'nodefactor(grade)',
+          'absdiff(activity)'
         ],
         guardrails: guardrailSets.library,
         chartLabel: "library",
@@ -305,8 +305,8 @@ construct admissible ERGM term library L*.`,
       {
         id: "spec",
         number: "1b",
-        rail: "LLM Specs",
-        subtitle: "Structured JSON proposals",
+        rail: "Formula",
+        subtitle: "LLM proposal",
         kicker: "Stage 1b",
         title: "Generate LLM Specifications",
         status: "Stage 1b: LLM proposals",
@@ -320,7 +320,7 @@ construct admissible ERGM term library L*.`,
           ["4", "terms in best spec"],
           ["0.2", "temperature"]
         ],
-        terms: ["edges", 'gwesp(0.5, fixed=TRUE)', 'nodematch("club")', 'gwdegree(0.5, fixed=TRUE)'],
+        terms: ["edges", 'gwesp', 'nodematch(club)', 'gwdegree'],
         guardrails: guardrailSets.spec,
         chartLabel: "M4 selected",
         bic: [
@@ -356,8 +356,8 @@ Network diagnostics suggest clustering, homophily, and degree skew.`,
       {
         id: "fit",
         number: "2",
-        rail: "Fit and Select",
-        subtitle: "MPLE screen",
+        rail: "Screen",
+        subtitle: "Fast fit",
         kicker: "Stage 2",
         title: "Fit Candidate Specifications",
         status: "Stage 2: model screen",
@@ -371,7 +371,7 @@ Network diagnostics suggest clustering, homophily, and degree skew.`,
           ["2.8", "max Wald |z|"],
           ["M4", "winner"]
         ],
-        terms: ["edges", 'gwesp(0.5, fixed=TRUE)', 'nodematch("club")', 'gwdegree(0.5, fixed=TRUE)'],
+        terms: ["edges", 'gwesp', 'nodematch(club)', 'gwdegree'],
         guardrails: guardrailSets.fit,
         chartLabel: "M4 winner",
         bic: [
@@ -402,8 +402,8 @@ fit MPLE and rank by pseudo-BIC, AUPRC, diagnostics.`,
       {
         id: "refine",
         number: "3",
-        rail: "Refinement",
-        subtitle: "One-edit loop",
+        rail: "Revise",
+        subtitle: "Checked edit",
         kicker: "Stage 3",
         title: "LLM-Guided Refinement",
         status: "Stage 3: refinement",
@@ -419,10 +419,10 @@ fit MPLE and rank by pseudo-BIC, AUPRC, diagnostics.`,
         ],
         terms: [
           "edges",
-          'gwesp(0.5, fixed=TRUE)',
-          'nodematch("club")',
-          'gwdegree(0.5, fixed=TRUE)',
-          'nodematch("grade")'
+          'gwesp',
+          'nodematch(club)',
+          'gwdegree',
+          'nodematch(grade)'
         ],
         guardrails: guardrailSets.refine,
         chartLabel: "refined",
@@ -456,53 +456,54 @@ return one JSON edit from L*.`,
       {
         id: "interpret",
         number: "4",
-        rail: "Interpretation",
-        subtitle: "Model-grounded explanation",
+        rail: "Interpret",
+        subtitle: "Final summary",
         kicker: "Stage 4",
-        title: "Interpret the Mechanism",
+        title: "Final Interpretation",
         status: "Stage 4: interpretation",
-        lens: "model-grounded interpretation",
-        mechanismTitle: "The interpretation LLM converts coefficients into a model-grounded explanation",
+        lens: "final interpretation",
+        mechanismTitle: "What the model supports",
         mechanismCopy:
-          "Stage 4 does not change the model. It explains what the accepted terms mean, which evidence supports them, and where the claims should stay cautious.",
+          "The selected model includes shared activities, grade cohorts, shared friends, and a few well-connected students.",
         metrics: [
-          ["4", "mechanisms"],
-          ["2", "attribute effects"],
-          ["1", "fit caveat"],
+          ["5", "terms"],
+          ["2", "attributes"],
+          ["1", "caveat"],
           ["0", "causal claims"]
         ],
         terms: [
           "edges",
-          'gwesp(0.5, fixed=TRUE)',
-          'nodematch("club")',
-          'gwdegree(0.5, fixed=TRUE)',
-          'nodematch("grade")'
+          'gwesp',
+          'nodematch(club)',
+          'gwdegree',
+          'nodematch(grade)'
         ],
         guardrails: guardrailSets.interpret,
         chartLabel: "final",
         bic: [
-          ["Null", 96.4],
-          ["LLM", 70.2],
-          ["Final", 66.8]
+          ["Edge-only null", 96.4],
+          ["LLM proposal", 70.2],
+          ["After revision", 66.8]
         ],
         prompt: `input:
-final formula, coefficients, BIC, GOF, dataset brief, refinement history
+fitted terms + coefficients
+BIC and GOF checks
+revision history
 
 task:
-explain mechanisms and produce a human-readable, model-grounded interpretation.
-Do not infer causality.`,
+summarize fitted terms
+separate evidence from caveats
+avoid causal claims`,
         output: `{
-  "headline": "Friendships are shaped by shared contexts and shared friends.",
-  "model_grounded_interpretation": "Students are more likely to be friends when they move through the same social settings. Activity groups and grade cohorts create repeated contact, shared friends close triangles, and a few well-connected students bridge otherwise separate clusters. The model supports this as a conditional network pattern, not as proof that any single attribute causes friendship.",
-  "limitations": [
-    "Small illustrative network",
-    "Interpretation depends on GOF and coefficient stability"
-  ]
+  "summary": "Shared contexts and shared friends explain friendship.",
+  "supported_terms": ["club", "grade", "shared friends", "hubs"],
+  "caveat": "Conditional, not causal."
 }`,
-        outputBadge: "interpretation json",
+        outputBadge: "interpretation JSON",
         highlight: "final",
+        theoryHeadline: "Fitted terms explain friendship structure",
         theory:
-          "Students are more likely to be friends when they move through the same social settings. Activity groups and grade cohorts create repeated contact, shared friends close triangles, and a few well-connected students bridge otherwise separate clusters. The model supports this as a conditional network pattern, not as proof that any single attribute causes friendship."
+          "Shared activities and grade cohorts are associated with friendship. Shared friends and a few well-connected students add structure. These are conditional associations, not causal effects."
       }
     ]
   },
@@ -552,8 +553,8 @@ Do not infer causality.`,
       {
         id: "intake",
         number: "0",
-        rail: "Network Intake",
-        subtitle: "Graph and diagnostics",
+        rail: "Intake",
+        subtitle: "Graph checks",
         kicker: "Stage 0",
         title: "Network Intake",
         status: "Stage 0: diagnostics",
@@ -596,8 +597,8 @@ summarize network diagnostics for ERGM specification.`,
       {
         id: "library",
         number: "1",
-        rail: "Candidate Library",
-        subtitle: "Safe ERGM terms",
+        rail: "Library",
+        subtitle: "Valid terms",
         kicker: "Stage 1a",
         title: "Build an Admissible Term Library",
         status: "Stage 1a: library",
@@ -613,13 +614,13 @@ summarize network diagnostics for ERGM specification.`,
         ],
         terms: [
           "edges",
-          'gwesp(0.5, fixed=TRUE)',
-          'gwdsp(0.5, fixed=TRUE)',
-          'gwdegree(0.5, fixed=TRUE)',
-          'nodematch("area")',
-          'nodematch("role")',
-          'nodefactor("role")',
-          'absdiff("seniority")'
+          'gwesp',
+          'gwdsp',
+          'gwdegree',
+          'nodematch(area)',
+          'nodematch(role)',
+          'nodefactor(role)',
+          'absdiff(seniority)'
         ],
         guardrails: guardrailSets.library,
         chartLabel: "library",
@@ -658,8 +659,8 @@ construct admissible ERGM term library L*.`,
       {
         id: "spec",
         number: "1b",
-        rail: "LLM Specs",
-        subtitle: "Structured JSON proposals",
+        rail: "Formula",
+        subtitle: "LLM proposal",
         kicker: "Stage 1b",
         title: "Generate LLM Specifications",
         status: "Stage 1b: LLM proposals",
@@ -673,7 +674,7 @@ construct admissible ERGM term library L*.`,
           ["4", "terms in best spec"],
           ["0.2", "temperature"]
         ],
-        terms: ["edges", 'gwesp(0.5, fixed=TRUE)', 'nodematch("area")', 'gwdegree(0.5, fixed=TRUE)'],
+        terms: ["edges", 'gwesp', 'nodematch(area)', 'gwdegree'],
         guardrails: guardrailSets.spec,
         chartLabel: "L4 selected",
         bic: [
@@ -709,8 +710,8 @@ Diagnostics suggest same-area collaboration, closure, and bridge researchers.`,
       {
         id: "fit",
         number: "2",
-        rail: "Fit and Select",
-        subtitle: "MPLE screen",
+        rail: "Screen",
+        subtitle: "Fast fit",
         kicker: "Stage 2",
         title: "Fit Candidate Specifications",
         status: "Stage 2: model screen",
@@ -724,7 +725,7 @@ Diagnostics suggest same-area collaboration, closure, and bridge researchers.`,
           ["2.5", "max Wald |z|"],
           ["L4", "winner"]
         ],
-        terms: ["edges", 'gwesp(0.5, fixed=TRUE)', 'nodematch("area")', 'gwdegree(0.5, fixed=TRUE)'],
+        terms: ["edges", 'gwesp', 'nodematch(area)', 'gwdegree'],
         guardrails: guardrailSets.fit,
         chartLabel: "L4 winner",
         bic: [
@@ -755,8 +756,8 @@ fit MPLE and rank by pseudo-BIC, AUPRC, diagnostics.`,
       {
         id: "refine",
         number: "3",
-        rail: "Refinement",
-        subtitle: "One-edit loop",
+        rail: "Revise",
+        subtitle: "Checked edit",
         kicker: "Stage 3",
         title: "LLM-Guided Refinement",
         status: "Stage 3: refinement",
@@ -772,10 +773,10 @@ fit MPLE and rank by pseudo-BIC, AUPRC, diagnostics.`,
         ],
         terms: [
           "edges",
-          'gwesp(0.5, fixed=TRUE)',
-          'nodematch("area")',
-          'gwdegree(0.5, fixed=TRUE)',
-          'nodematch("role")'
+          'gwesp',
+          'nodematch(area)',
+          'gwdegree',
+          'nodematch(role)'
         ],
         guardrails: guardrailSets.refine,
         chartLabel: "refined",
@@ -809,53 +810,54 @@ return one JSON edit from L*.`,
       {
         id: "interpret",
         number: "4",
-        rail: "Interpretation",
-        subtitle: "Model-grounded explanation",
+        rail: "Interpret",
+        subtitle: "Final summary",
         kicker: "Stage 4",
-        title: "Interpret the Mechanism",
+        title: "Final Interpretation",
         status: "Stage 4: interpretation",
-        lens: "model-grounded interpretation",
-        mechanismTitle: "The interpretation LLM turns lab coefficients into a model-grounded explanation",
+        lens: "final interpretation",
+        mechanismTitle: "What the model supports",
         mechanismCopy:
-          "Stage 4 freezes the selected model and explains why each term matters: area boundaries, shared collaborators, role structure, and central bridge researchers.",
+          "The selected model includes research areas, shared collaborators, role similarity, and bridge researchers.",
         metrics: [
-          ["4", "mechanisms"],
-          ["2", "attribute effects"],
-          ["1", "fit caveat"],
+          ["5", "terms"],
+          ["2", "attributes"],
+          ["1", "caveat"],
           ["0", "causal claims"]
         ],
         terms: [
           "edges",
-          'gwesp(0.5, fixed=TRUE)',
-          'nodematch("area")',
-          'gwdegree(0.5, fixed=TRUE)',
-          'nodematch("role")'
+          'gwesp',
+          'nodematch(area)',
+          'gwdegree',
+          'nodematch(role)'
         ],
         guardrails: guardrailSets.interpret,
         chartLabel: "final",
         bic: [
-          ["Null", 104.8],
-          ["LLM", 82.7],
-          ["Final", 78.9]
+          ["Edge-only null", 104.8],
+          ["LLM proposal", 82.7],
+          ["After revision", 78.9]
         ],
         prompt: `input:
-final formula, coefficients, BIC, GOF, dataset brief, refinement history
+fitted terms + coefficients
+BIC and GOF checks
+revision history
 
 task:
-explain mechanisms and produce a human-readable, model-grounded interpretation.
-Do not infer causality.`,
+summarize fitted terms
+separate evidence from caveats
+avoid causal claims`,
         output: `{
-  "headline": "Collaborations are shaped by research area, shared collaborators, and role structure.",
-  "model_grounded_interpretation": "Researchers are more likely to collaborate when they work in the same area and already share collaborators. Role similarity adds another layer: peers with similar positions tend to appear together in projects. A few highly connected researchers link otherwise separate areas. The model supports this as a conditional collaboration pattern, not proof that area or role causes collaboration.",
-  "limitations": [
-    "Small illustrative network",
-    "Interpretation depends on GOF and coefficient stability"
-  ]
+  "summary": "Area and shared ties explain collaboration.",
+  "supported_terms": ["area", "shared collaborators", "role", "bridges"],
+  "caveat": "Conditional, not causal."
 }`,
-        outputBadge: "interpretation json",
+        outputBadge: "interpretation JSON",
         highlight: "final",
+        theoryHeadline: "Fitted terms explain collaboration structure",
         theory:
-          "Researchers are more likely to collaborate when they work in the same area and already share collaborators. Role similarity adds another layer: peers with similar positions tend to appear together in projects. A few highly connected researchers link otherwise separate areas. The model supports this as a conditional collaboration pattern, not proof that area or role causes collaboration."
+          "Same-area ties and shared collaborators are associated with collaboration. Role similarity and bridge researchers add structure. These are conditional associations, not causal effects."
       }
     ]
   },
@@ -904,8 +906,8 @@ Do not infer causality.`,
       {
         id: "intake",
         number: "0",
-        rail: "Network Intake",
-        subtitle: "Graph and diagnostics",
+        rail: "Intake",
+        subtitle: "Graph checks",
         kicker: "Stage 0",
         title: "Network Intake",
         status: "Stage 0: diagnostics",
@@ -948,8 +950,8 @@ summarize network diagnostics for ERGM specification.`,
       {
         id: "library",
         number: "1",
-        rail: "Candidate Library",
-        subtitle: "Safe ERGM terms",
+        rail: "Library",
+        subtitle: "Valid terms",
         kicker: "Stage 1a",
         title: "Build an Admissible Term Library",
         status: "Stage 1a: library",
@@ -965,13 +967,13 @@ summarize network diagnostics for ERGM specification.`,
         ],
         terms: [
           "edges",
-          'gwesp(0.5, fixed=TRUE)',
-          'gwdsp(0.5, fixed=TRUE)',
-          'gwdegree(0.5, fixed=TRUE)',
-          'nodematch("block")',
-          'nodematch("tenure_group")',
-          'nodefactor("tenure_group")',
-          'absdiff("tenure_years")'
+          'gwesp',
+          'gwdsp',
+          'gwdegree',
+          'nodematch(block)',
+          'nodematch(tenure_group)',
+          'nodefactor(tenure_group)',
+          'absdiff(tenure_years)'
         ],
         guardrails: guardrailSets.library,
         chartLabel: "library",
@@ -1010,8 +1012,8 @@ construct admissible ERGM term library L*.`,
       {
         id: "spec",
         number: "1b",
-        rail: "LLM Specs",
-        subtitle: "Structured JSON proposals",
+        rail: "Formula",
+        subtitle: "LLM proposal",
         kicker: "Stage 1b",
         title: "Generate LLM Specifications",
         status: "Stage 1b: LLM proposals",
@@ -1025,7 +1027,7 @@ construct admissible ERGM term library L*.`,
           ["4", "terms in best spec"],
           ["0.2", "temperature"]
         ],
-        terms: ["edges", 'gwesp(0.5, fixed=TRUE)', 'nodematch("block")', 'gwdegree(0.5, fixed=TRUE)'],
+        terms: ["edges", 'gwesp', 'nodematch(block)', 'gwdegree'],
         guardrails: guardrailSets.spec,
         chartLabel: "N4 selected",
         bic: [
@@ -1061,8 +1063,8 @@ Diagnostics suggest same-block support, closure, and helper hubs.`,
       {
         id: "fit",
         number: "2",
-        rail: "Fit and Select",
-        subtitle: "MPLE screen",
+        rail: "Screen",
+        subtitle: "Fast fit",
         kicker: "Stage 2",
         title: "Fit Candidate Specifications",
         status: "Stage 2: model screen",
@@ -1076,7 +1078,7 @@ Diagnostics suggest same-block support, closure, and helper hubs.`,
           ["2.7", "max Wald |z|"],
           ["N4", "winner"]
         ],
-        terms: ["edges", 'gwesp(0.5, fixed=TRUE)', 'nodematch("block")', 'gwdegree(0.5, fixed=TRUE)'],
+        terms: ["edges", 'gwesp', 'nodematch(block)', 'gwdegree'],
         guardrails: guardrailSets.fit,
         chartLabel: "N4 winner",
         bic: [
@@ -1107,8 +1109,8 @@ fit MPLE and rank by pseudo-BIC, AUPRC, diagnostics.`,
       {
         id: "refine",
         number: "3",
-        rail: "Refinement",
-        subtitle: "One-edit loop",
+        rail: "Revise",
+        subtitle: "Checked edit",
         kicker: "Stage 3",
         title: "LLM-Guided Refinement",
         status: "Stage 3: refinement",
@@ -1124,10 +1126,10 @@ fit MPLE and rank by pseudo-BIC, AUPRC, diagnostics.`,
         ],
         terms: [
           "edges",
-          'gwesp(0.5, fixed=TRUE)',
-          'nodematch("block")',
-          'gwdegree(0.5, fixed=TRUE)',
-          'absdiff("tenure_years")'
+          'gwesp',
+          'nodematch(block)',
+          'gwdegree',
+          'absdiff(tenure_years)'
         ],
         guardrails: guardrailSets.refine,
         chartLabel: "refined",
@@ -1161,53 +1163,54 @@ return one JSON edit from L*.`,
       {
         id: "interpret",
         number: "4",
-        rail: "Interpretation",
-        subtitle: "Model-grounded explanation",
+        rail: "Interpret",
+        subtitle: "Final summary",
         kicker: "Stage 4",
-        title: "Interpret the Mechanism",
+        title: "Final Interpretation",
         status: "Stage 4: interpretation",
-        lens: "model-grounded interpretation",
-        mechanismTitle: "The interpretation LLM turns support-network terms into a model-grounded explanation",
+        lens: "final interpretation",
+        mechanismTitle: "What the model supports",
         mechanismCopy:
-          "Stage 4 explains the final model in ordinary language: local proximity, shared neighbors, helper hubs, and tenure similarity shape the observed aid network.",
+          "The selected model includes residential blocks, shared neighbors, helper hubs, and residence tenure.",
         metrics: [
-          ["4", "mechanisms"],
-          ["2", "attribute effects"],
-          ["1", "fit caveat"],
+          ["5", "terms"],
+          ["2", "attributes"],
+          ["1", "caveat"],
           ["0", "causal claims"]
         ],
         terms: [
           "edges",
-          'gwesp(0.5, fixed=TRUE)',
-          'nodematch("block")',
-          'gwdegree(0.5, fixed=TRUE)',
-          'absdiff("tenure_years")'
+          'gwesp',
+          'nodematch(block)',
+          'gwdegree',
+          'absdiff(tenure_years)'
         ],
         guardrails: guardrailSets.interpret,
         chartLabel: "final",
         bic: [
-          ["Null", 99.3],
-          ["LLM", 76.4],
-          ["Final", 72.9]
+          ["Edge-only null", 99.3],
+          ["LLM proposal", 76.4],
+          ["After revision", 72.9]
         ],
         prompt: `input:
-final formula, coefficients, BIC, GOF, dataset brief, refinement history
+fitted terms + coefficients
+BIC and GOF checks
+revision history
 
 task:
-explain mechanisms and produce a human-readable, model-grounded interpretation.
-Do not infer causality.`,
+summarize fitted terms
+separate evidence from caveats
+avoid causal claims`,
         output: `{
-  "headline": "Mutual aid is shaped by local blocks, shared neighbors, and residence history.",
-  "model_grounded_interpretation": "Households are more likely to exchange help when they live in the same block and share nearby support contacts. A small number of well-connected households bridge blocks, while similar residence history adds another layer of connection. The model supports this as a conditional pattern in the aid network, not proof that block or tenure causes support.",
-  "limitations": [
-    "Small illustrative network",
-    "Interpretation depends on GOF and coefficient stability"
-  ]
+  "summary": "Blocks and shared neighbors explain mutual aid.",
+  "supported_terms": ["block", "shared neighbors", "hubs", "tenure"],
+  "caveat": "Conditional, not causal."
 }`,
-        outputBadge: "interpretation json",
+        outputBadge: "interpretation JSON",
         highlight: "final",
+        theoryHeadline: "Fitted terms explain mutual-aid structure",
         theory:
-          "Households are more likely to exchange help when they live in the same block and share nearby support contacts. A small number of well-connected households bridge blocks, while similar residence history adds another layer of connection. The model supports this as a conditional pattern in the aid network, not proof that block or tenure causes support."
+          "Same-block ties and shared neighbors are associated with mutual aid. Helper hubs and residence tenure add structure. These are conditional associations, not causal effects."
       }
     ]
   }
@@ -1533,7 +1536,7 @@ function setStage(index) {
   promptView.textContent = stage.prompt;
   outputView.textContent = stage.output;
   outputBadge.textContent = stage.outputBadge;
-  theoryHeadline.textContent = stage.mechanismTitle;
+  theoryHeadline.textContent = stage.theoryHeadline || stage.mechanismTitle;
   theoryCopy.textContent = stage.theory;
   bestModelLabel.textContent = stage.chartLabel;
 
