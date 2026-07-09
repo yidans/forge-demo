@@ -131,7 +131,7 @@ const guardrailSets = {
     ["pass", "Triangle is excluded; curved closure terms are preferred"]
   ],
   spec: [
-    ["pass", "All selected terms are inside the admissible library"],
+    ["pass", "All selected terms come from the valid library"],
     ["pass", "Specification includes edges"],
     ["pass", "Term count stays within the demo guardrail"]
   ],
@@ -141,7 +141,7 @@ const guardrailSets = {
     ["warn", "GOF still shows mild residual structure"]
   ],
   refine: [
-    ["pass", "Single edit is admissible"],
+    ["pass", "Single edit uses a valid term"],
     ["pass", "Refined BIC improves over the selected model"],
     ["pass", "GOF max |z| drops below 2.0"]
   ],
@@ -246,14 +246,14 @@ summarize network diagnostics for ERGM specification.`,
         rail: "Library",
         subtitle: "Valid terms",
         kicker: "Stage 1a",
-        title: "Build an Admissible Term Library",
+        title: "Build a Valid Term Library",
         status: "Stage 1a: library",
         lens: "candidate mechanisms",
         mechanismTitle: "The library turns observations into safe model ingredients",
         mechanismCopy:
           "FORGE proposes only terms that match the network type and attributes. This keeps the LLM from inventing invalid ERGM syntax during specification generation.",
         metrics: [
-          ["8", "admissible terms"],
+          ["8", "valid terms"],
           ["3", "structural terms"],
           ["3", "attribute terms"],
           ["0", "off-menu terms"]
@@ -283,7 +283,7 @@ attributes:
   activity: numeric, range 4-9
 
 task:
-construct admissible ERGM term library L*.`,
+construct the valid ERGM term library L*.`,
         output: `{
   "L_star": [
     "edges",
@@ -300,7 +300,7 @@ construct admissible ERGM term library L*.`,
         outputBadge: "library",
         highlight: "homophily",
         theory:
-          "The admissible mechanism space contains four mechanism families: baseline tie propensity, shared-friend closure, degree inequality, and attribute-based similarity."
+          "The valid term space contains four mechanism families: baseline tie propensity, shared-friend closure, degree inequality, and attribute-based similarity."
       },
       {
         id: "spec",
@@ -313,7 +313,7 @@ construct admissible ERGM term library L*.`,
         lens: "LLM-selected terms",
         mechanismTitle: "The LLM chooses a compact explanation from the library",
         mechanismCopy:
-          "The model sees diagnostics and the admissible library, then returns JSON. The interface makes off-menu behavior visible and auditable.",
+          "The model sees diagnostics and the valid term library, then returns JSON. The interface makes off-menu behavior visible and auditable.",
         metrics: [
           ["3", "candidate specs"],
           ["100%", "library compliance"],
@@ -600,14 +600,14 @@ summarize network diagnostics for ERGM specification.`,
         rail: "Library",
         subtitle: "Valid terms",
         kicker: "Stage 1a",
-        title: "Build an Admissible Term Library",
+        title: "Build a Valid Term Library",
         status: "Stage 1a: library",
         lens: "candidate mechanisms",
         mechanismTitle: "The library maps lab structure into valid ERGM terms",
         mechanismCopy:
           "FORGE restricts the LLM to terms that match an undirected collaboration graph and the available area, role, and seniority attributes.",
         metrics: [
-          ["8", "admissible terms"],
+          ["8", "valid terms"],
           ["3", "structural terms"],
           ["3", "attribute terms"],
           ["0", "off-menu terms"]
@@ -637,7 +637,7 @@ attributes:
   seniority: numeric, range 2-9
 
 task:
-construct admissible ERGM term library L*.`,
+construct the valid ERGM term library L*.`,
         output: `{
   "L_star": [
     "edges",
@@ -654,7 +654,7 @@ construct admissible ERGM term library L*.`,
         outputBadge: "library",
         highlight: "homophily",
         theory:
-          "The admissible mechanism space contains baseline collaboration rate, shared-collaborator closure, collaboration inequality, same-area effects, and role or seniority effects."
+          "The valid term space contains baseline collaboration rate, shared-collaborator closure, collaboration inequality, same-area effects, and role or seniority effects."
       },
       {
         id: "spec",
@@ -764,7 +764,7 @@ fit MPLE and rank by pseudo-BIC, AUPRC, diagnostics.`,
         lens: "accepted edit",
         mechanismTitle: "The refinement loop adds a role effect",
         mechanismCopy:
-          "Residual diagnostics show underfit among same-role dyads. The LLM proposes one admissible edit, and the fitter accepts it because BIC and GOF improve.",
+          "Residual diagnostics show underfit among same-role dyads. The LLM proposes one valid edit, and the fitter accepts it because BIC and GOF improve.",
         metrics: [
           ["78.9", "refined BIC"],
           ["1.6", "GOF max |z|"],
@@ -953,14 +953,14 @@ summarize network diagnostics for ERGM specification.`,
         rail: "Library",
         subtitle: "Valid terms",
         kicker: "Stage 1a",
-        title: "Build an Admissible Term Library",
+        title: "Build a Valid Term Library",
         status: "Stage 1a: library",
         lens: "candidate mechanisms",
         mechanismTitle: "The library turns block structure into safe model terms",
         mechanismCopy:
           "FORGE proposes terms that fit an undirected household support network and the available block and residence-tenure attributes.",
         metrics: [
-          ["8", "admissible terms"],
+          ["8", "valid terms"],
           ["3", "structural terms"],
           ["3", "attribute terms"],
           ["0", "off-menu terms"]
@@ -990,7 +990,7 @@ attributes:
   tenure_years: numeric, range 1-15
 
 task:
-construct admissible ERGM term library L*.`,
+construct the valid ERGM term library L*.`,
         output: `{
   "L_star": [
     "edges",
@@ -1007,7 +1007,7 @@ construct admissible ERGM term library L*.`,
         outputBadge: "library",
         highlight: "homophily",
         theory:
-          "The admissible mechanism space contains baseline support rate, shared-neighbor closure, support hubs, same-block clustering, and residence-tenure similarity."
+          "The valid term space contains baseline support rate, shared-neighbor closure, support hubs, same-block clustering, and residence-tenure similarity."
       },
       {
         id: "spec",
@@ -1117,7 +1117,7 @@ fit MPLE and rank by pseudo-BIC, AUPRC, diagnostics.`,
         lens: "accepted edit",
         mechanismTitle: "The refinement loop adds residence-tenure similarity",
         mechanismCopy:
-          "GOF shows residual underfit among households with similar residence duration. The LLM adds one admissible tenure term, and fit improves.",
+          "GOF shows residual underfit among households with similar residence duration. The LLM adds one valid tenure term, and fit improves.",
         metrics: [
           ["72.9", "refined BIC"],
           ["1.8", "GOF max |z|"],
