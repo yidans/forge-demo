@@ -147,7 +147,7 @@ const guardrailSets = {
   ],
   interpret: [
     ["pass", "Mechanism claims are tied to fitted terms"],
-    ["pass", "The theory separates evidence from caveats"],
+    ["pass", "The interpretation separates evidence from caveats"],
     ["pass", "No causal language is used"]
   ]
 };
@@ -238,7 +238,7 @@ summarize network diagnostics for ERGM specification.`,
         outputBadge: "diagnostics",
         highlight: "raw",
         theory:
-          "At intake, FORGE has not made a theory yet. It only records that friendships are not random: students appear to cluster by activity, close triangles with mutual friends, and rely on a few bridge students."
+          "At intake, FORGE has not produced an interpretation yet. It only records that friendships are not random: students appear to cluster by activity, close triangles with mutual friends, and rely on a few bridge students."
       },
       {
         id: "library",
@@ -300,7 +300,7 @@ construct admissible ERGM term library L*.`,
         outputBadge: "library",
         highlight: "homophily",
         theory:
-          "The safe theory space contains four mechanism families: baseline tie propensity, shared-friend closure, degree inequality, and attribute-based similarity."
+          "The admissible mechanism space contains four mechanism families: baseline tie propensity, shared-friend closure, degree inequality, and attribute-based similarity."
       },
       {
         id: "spec",
@@ -351,7 +351,7 @@ Network diagnostics suggest clustering, homophily, and degree skew.`,
         outputBadge: "llm json",
         highlight: "closure",
         theory:
-          "The LLM's first theory is that friendship is mostly explained by shared friends, shared activity group, and unequal popularity."
+          "The LLM's first proposal is that friendship is mostly explained by shared friends, shared activity group, and unequal popularity."
       },
       {
         id: "fit",
@@ -397,7 +397,7 @@ fit MPLE and rank by pseudo-BIC, AUPRC, diagnostics.`,
         outputBadge: "fit table",
         highlight: "winner",
         theory:
-          "The evidence favors the compact theory: shared friends, shared club, and degree inequality explain more than the edge-only baseline."
+          "The evidence favors the compact specification: shared friends, shared club, and degree inequality explain more than the edge-only baseline."
       },
       {
         id: "refine",
@@ -451,18 +451,18 @@ return one JSON edit from L*.`,
         outputBadge: "edit record",
         highlight: "refined",
         theory:
-          "The refined theory adds grade cohorts: students form friendships through shared activity, shared grade, shared friends, and uneven centrality."
+          "The refined model adds grade cohorts: students form friendships through shared activity, shared grade, shared friends, and uneven centrality."
       },
       {
         id: "interpret",
         number: "4",
         rail: "Interpretation",
-        subtitle: "Human theory",
+        subtitle: "Model-grounded explanation",
         kicker: "Stage 4",
         title: "Interpret the Mechanism",
-        status: "Stage 4: human theory",
-        lens: "human-understandable theory",
-        mechanismTitle: "The interpretation LLM converts coefficients into a theory",
+        status: "Stage 4: interpretation",
+        lens: "model-grounded interpretation",
+        mechanismTitle: "The interpretation LLM converts coefficients into a model-grounded explanation",
         mechanismCopy:
           "Stage 4 does not change the model. It explains what the accepted terms mean, which evidence supports them, and where the claims should stay cautious.",
         metrics: [
@@ -489,17 +489,17 @@ return one JSON edit from L*.`,
 final formula, coefficients, BIC, GOF, dataset brief, refinement history
 
 task:
-explain mechanisms and produce a human-understandable theory.
+explain mechanisms and produce a human-readable, model-grounded interpretation.
 Do not infer causality.`,
         output: `{
   "headline": "Friendships are shaped by shared contexts and shared friends.",
-  "human_understandable_theory": "Students are more likely to be friends when they move through the same social settings. Activity groups and grade cohorts create repeated contact, shared friends close triangles, and a few well-connected students bridge otherwise separate clusters. The model supports this as a conditional network pattern, not as proof that any single attribute causes friendship.",
+  "model_grounded_interpretation": "Students are more likely to be friends when they move through the same social settings. Activity groups and grade cohorts create repeated contact, shared friends close triangles, and a few well-connected students bridge otherwise separate clusters. The model supports this as a conditional network pattern, not as proof that any single attribute causes friendship.",
   "limitations": [
     "Toy network for demo",
     "Interpretation depends on GOF and coefficient stability"
   ]
 }`,
-        outputBadge: "theory json",
+        outputBadge: "interpretation json",
         highlight: "final",
         theory:
           "Students are more likely to be friends when they move through the same social settings. Activity groups and grade cohorts create repeated contact, shared friends close triangles, and a few well-connected students bridge otherwise separate clusters. The model supports this as a conditional network pattern, not as proof that any single attribute causes friendship."
@@ -591,7 +591,7 @@ summarize network diagnostics for ERGM specification.`,
         outputBadge: "diagnostics",
         highlight: "raw",
         theory:
-          "At intake, FORGE has not made a theory yet. It records that collaborations concentrate inside research areas, close around shared collaborators, and depend on a few researchers who bridge areas."
+          "At intake, FORGE has not produced an interpretation yet. It records that collaborations concentrate inside research areas, close around shared collaborators, and depend on a few researchers who bridge areas."
       },
       {
         id: "library",
@@ -653,7 +653,7 @@ construct admissible ERGM term library L*.`,
         outputBadge: "library",
         highlight: "homophily",
         theory:
-          "The safe theory space contains baseline collaboration rate, shared-collaborator closure, collaboration inequality, same-area effects, and role or seniority effects."
+          "The admissible mechanism space contains baseline collaboration rate, shared-collaborator closure, collaboration inequality, same-area effects, and role or seniority effects."
       },
       {
         id: "spec",
@@ -704,7 +704,7 @@ Diagnostics suggest same-area collaboration, closure, and bridge researchers.`,
         outputBadge: "llm json",
         highlight: "closure",
         theory:
-          "The LLM's first theory is that researchers collaborate mostly through shared collaborators, shared research area, and unequal centrality."
+          "The LLM's first proposal is that researchers collaborate mostly through shared collaborators, shared research area, and unequal centrality."
       },
       {
         id: "fit",
@@ -750,7 +750,7 @@ fit MPLE and rank by pseudo-BIC, AUPRC, diagnostics.`,
         outputBadge: "fit table",
         highlight: "winner",
         theory:
-          "The evidence favors a compact theory: collaboration follows research-area boundaries, shared collaborators, and uneven centrality."
+          "The evidence favors a compact specification: collaboration follows research-area boundaries, shared collaborators, and uneven centrality."
       },
       {
         id: "refine",
@@ -804,18 +804,18 @@ return one JSON edit from L*.`,
         outputBadge: "edit record",
         highlight: "refined",
         theory:
-          "The refined theory adds role structure: collaborations form through shared research area, same-role ties, shared collaborators, and a few central connectors."
+          "The refined model adds role structure: collaborations form through shared research area, same-role ties, shared collaborators, and a few central connectors."
       },
       {
         id: "interpret",
         number: "4",
         rail: "Interpretation",
-        subtitle: "Human theory",
+        subtitle: "Model-grounded explanation",
         kicker: "Stage 4",
         title: "Interpret the Mechanism",
-        status: "Stage 4: human theory",
-        lens: "human-understandable theory",
-        mechanismTitle: "The interpretation LLM turns lab coefficients into a theory",
+        status: "Stage 4: interpretation",
+        lens: "model-grounded interpretation",
+        mechanismTitle: "The interpretation LLM turns lab coefficients into a model-grounded explanation",
         mechanismCopy:
           "Stage 4 freezes the selected model and explains why each term matters: area boundaries, shared collaborators, role structure, and central bridge researchers.",
         metrics: [
@@ -842,17 +842,17 @@ return one JSON edit from L*.`,
 final formula, coefficients, BIC, GOF, dataset brief, refinement history
 
 task:
-explain mechanisms and produce a human-understandable theory.
+explain mechanisms and produce a human-readable, model-grounded interpretation.
 Do not infer causality.`,
         output: `{
   "headline": "Collaborations are shaped by research area, shared collaborators, and role structure.",
-  "human_understandable_theory": "Researchers are more likely to collaborate when they work in the same area and already share collaborators. Role similarity adds another layer: peers with similar positions tend to appear together in projects. A few highly connected researchers link otherwise separate areas. The model supports this as a conditional collaboration pattern, not proof that area or role causes collaboration.",
+  "model_grounded_interpretation": "Researchers are more likely to collaborate when they work in the same area and already share collaborators. Role similarity adds another layer: peers with similar positions tend to appear together in projects. A few highly connected researchers link otherwise separate areas. The model supports this as a conditional collaboration pattern, not proof that area or role causes collaboration.",
   "limitations": [
     "Toy network for demo",
     "Interpretation depends on GOF and coefficient stability"
   ]
 }`,
-        outputBadge: "theory json",
+        outputBadge: "interpretation json",
         highlight: "final",
         theory:
           "Researchers are more likely to collaborate when they work in the same area and already share collaborators. Role similarity adds another layer: peers with similar positions tend to appear together in projects. A few highly connected researchers link otherwise separate areas. The model supports this as a conditional collaboration pattern, not proof that area or role causes collaboration."
@@ -943,7 +943,7 @@ summarize network diagnostics for ERGM specification.`,
         outputBadge: "diagnostics",
         highlight: "raw",
         theory:
-          "At intake, FORGE has not made a theory yet. It records that support ties cluster by block, close around shared neighbors, and rely on a few households that bridge local areas."
+          "At intake, FORGE has not produced an interpretation yet. It records that support ties cluster by block, close around shared neighbors, and rely on a few households that bridge local areas."
       },
       {
         id: "library",
@@ -1005,7 +1005,7 @@ construct admissible ERGM term library L*.`,
         outputBadge: "library",
         highlight: "homophily",
         theory:
-          "The safe theory space contains baseline support rate, shared-neighbor closure, support hubs, same-block clustering, and residence-tenure similarity."
+          "The admissible mechanism space contains baseline support rate, shared-neighbor closure, support hubs, same-block clustering, and residence-tenure similarity."
       },
       {
         id: "spec",
@@ -1056,7 +1056,7 @@ Diagnostics suggest same-block support, closure, and helper hubs.`,
         outputBadge: "llm json",
         highlight: "closure",
         theory:
-          "The LLM's first theory is that mutual aid is explained by same-block proximity, shared neighbors, and uneven helper centrality."
+          "The LLM's first proposal is that mutual aid is explained by same-block proximity, shared neighbors, and uneven helper centrality."
       },
       {
         id: "fit",
@@ -1102,7 +1102,7 @@ fit MPLE and rank by pseudo-BIC, AUPRC, diagnostics.`,
         outputBadge: "fit table",
         highlight: "winner",
         theory:
-          "The evidence favors a compact theory: aid flows through block proximity, shared neighbors, and a few highly connected helper households."
+          "The evidence favors a compact specification: aid flows through block proximity, shared neighbors, and a few highly connected helper households."
       },
       {
         id: "refine",
@@ -1156,18 +1156,18 @@ return one JSON edit from L*.`,
         outputBadge: "edit record",
         highlight: "refined",
         theory:
-          "The refined theory adds residence tenure: support is structured by block, shared neighbors, helper hubs, and similarity in how long households have lived there."
+          "The refined model adds residence tenure: support is structured by block, shared neighbors, helper hubs, and similarity in how long households have lived there."
       },
       {
         id: "interpret",
         number: "4",
         rail: "Interpretation",
-        subtitle: "Human theory",
+        subtitle: "Model-grounded explanation",
         kicker: "Stage 4",
         title: "Interpret the Mechanism",
-        status: "Stage 4: human theory",
-        lens: "human-understandable theory",
-        mechanismTitle: "The interpretation LLM turns support-network terms into a theory",
+        status: "Stage 4: interpretation",
+        lens: "model-grounded interpretation",
+        mechanismTitle: "The interpretation LLM turns support-network terms into a model-grounded explanation",
         mechanismCopy:
           "Stage 4 explains the final model in ordinary language: local proximity, shared neighbors, helper hubs, and tenure similarity shape the observed aid network.",
         metrics: [
@@ -1194,17 +1194,17 @@ return one JSON edit from L*.`,
 final formula, coefficients, BIC, GOF, dataset brief, refinement history
 
 task:
-explain mechanisms and produce a human-understandable theory.
+explain mechanisms and produce a human-readable, model-grounded interpretation.
 Do not infer causality.`,
         output: `{
   "headline": "Mutual aid is shaped by local blocks, shared neighbors, and residence history.",
-  "human_understandable_theory": "Households are more likely to exchange help when they live in the same block and share nearby support contacts. A small number of well-connected households bridge blocks, while similar residence history adds another layer of connection. The model supports this as a conditional pattern in the aid network, not proof that block or tenure causes support.",
+  "model_grounded_interpretation": "Households are more likely to exchange help when they live in the same block and share nearby support contacts. A small number of well-connected households bridge blocks, while similar residence history adds another layer of connection. The model supports this as a conditional pattern in the aid network, not proof that block or tenure causes support.",
   "limitations": [
     "Toy network for demo",
     "Interpretation depends on GOF and coefficient stability"
   ]
 }`,
-        outputBadge: "theory json",
+        outputBadge: "interpretation json",
         highlight: "final",
         theory:
           "Households are more likely to exchange help when they live in the same block and share nearby support contacts. A small number of well-connected households bridge blocks, while similar residence history adds another layer of connection. The model supports this as a conditional pattern in the aid network, not proof that block or tenure causes support."
