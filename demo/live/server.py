@@ -363,11 +363,12 @@ Refinement evidence:
 
 Task:
 Explain the mechanisms represented by this final ERGM. Tie each mechanism to specific terms and, where available, coefficient signs/magnitudes and refinement evidence. Then synthesize those mechanisms into one human-understandable theory of how ties form in this network. Separate supported interpretation from limitations. Do not overclaim causality. Note that estimates come from fast pseudo-likelihood fitting.
+The "headline" is shown to a general audience as the one-line summary, so write it in plain everyday words with NO statistical or ERGM jargon: do not use phrases like "triadic closure", "homophily", "baseline tie rate/rarity", "degree heterogeneity", "reciprocity", "conditional association", or term names. Say things people understand, e.g. "friends of friends tend to become friends", "students mostly befriend others in the same club and grade", "a few students have far more friends than the rest".
 Output language: English.
 
 Output JSON schema:
 {{
-  "headline": "one-sentence mechanism summary",
+  "headline": "one plain-language sentence a non-expert can read, describing how ties form in everyday words, with no statistical/ERGM jargon or term names",
   "human_understandable_theory": "plain theory of the network in 1-2 short paragraphs, using everyday language and no ERGM jargon unless briefly defined",
   "mechanism_explanation": "concise paragraph (at most 4 short sentences) explaining the main network mechanisms",
   "term_interpretations": [
