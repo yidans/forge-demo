@@ -1283,7 +1283,9 @@ function isSameGroup(edge, demo) {
 }
 
 function isSameCohort(edge, demo) {
-  return demo.nodeById[edge.source].cohort === demo.nodeById[edge.target].cohort;
+  const a = demo.nodeById[edge.source].cohort;
+  const b = demo.nodeById[edge.target].cohort;
+  return Boolean(a) && a === b;
 }
 
 function isClosureEdge(edge, demo) {
@@ -1628,6 +1630,11 @@ document.getElementById("play-step").addEventListener("click", replay);
 document.getElementById("copy-prompt").addEventListener("click", copyPrompt);
 
 document.addEventListener("keydown", (event) => {
+  const target = event.target;
+  if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" ||
+      target.tagName === "SELECT" || target.isContentEditable)) {
+    return;
+  }
   if (event.key === "ArrowRight") nextStage();
   if (event.key === "ArrowLeft") previousStage();
 });
