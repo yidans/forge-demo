@@ -744,3 +744,129 @@ button {
     font-size: 19px;
   }
 }
+
+/* ---------------------------------------------------------------- live mode */
+
+.live-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 12px 18px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.live-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 120px;
+}
+
+.live-field.grow {
+  flex: 1 1 190px;
+}
+
+.live-field label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.live-field select,
+.live-field input {
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 7px 9px;
+}
+
+.live-field select:focus-visible,
+.live-field input:focus-visible,
+.live-custom textarea:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 1px;
+}
+
+.live-run {
+  white-space: nowrap;
+}
+
+.live-status {
+  flex: 1 1 100%;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.live-status[data-state="running"] {
+  color: var(--green);
+}
+
+.live-status[data-state="running"]::before {
+  content: "";
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 7px;
+  border-radius: 50%;
+  border: 2px solid var(--green-soft);
+  border-top-color: var(--green);
+  animation: live-spin 0.9s linear infinite;
+  vertical-align: -1px;
+}
+
+.live-status[data-state="done"] {
+  color: #15803d;
+}
+
+.live-status[data-state="error"] {
+  color: #b91c1c;
+}
+
+@keyframes live-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.live-custom {
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.live-custom label {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.live-custom textarea {
+  font-family: "SF Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--gray-soft);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 9px 11px;
+  resize: vertical;
+}
+
+.live-custom[hidden],
+.live-bar[hidden] {
+  display: none;
+}
+
+#mechanism-copy {
+  max-height: 236px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
