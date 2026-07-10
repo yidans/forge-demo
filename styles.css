@@ -1014,3 +1014,8 @@ body.forge-live .network-picker {
     padding: 10px 14px;
   }
 }
+
+/* Per-stage highlight lenses removed — hide the lens badge. */
+#lens-label {
+  display: none;
+}
