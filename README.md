@@ -1,34 +1,40 @@
-# FORGE EMNLP Demo
+# FORGE Demo
 
-Self-contained browser demo for the FORGE pipeline. The interface supports three selectable toy networks:
+Browser demo for **FORGE: An Interactive System for Guarded LLM-Assisted ERGM
+Specification and Interpretation** (EMNLP 2026 System Demonstrations
+submission).
 
-- School friendship
-- Research collaboration
-- Neighborhood mutual aid
+Live site: https://yidans.github.io/forge-demo/
 
-Live demo: https://yidans.github.io/forge-demo/
+The interface walks through the six FORGE stages on three illustrative
+networks — School friendship, Research collaboration, Neighborhood mutual aid:
 
-## Run
-
-Open `index.html` directly in a browser, or serve the folder locally:
-
-```bash
-python3 -m http.server 8765 --directory demo
-```
-
-Then open:
-
-```text
-http://127.0.0.1:8765
-```
-
-## Demo Flow
-
-- Stage 0: selected toy network and diagnostics
-- Stage 1a: admissible ERGM term library
+- Stage 0: selected network and diagnostics (computed live in the browser)
+- Stage 1a: valid ERGM term library
 - Stage 1b: LLM JSON specification proposal
-- Stage 2: MPLE-style model screening
+- Stage 2: MPLE model screening
 - Stage 3: one-edit refinement loop
 - Stage 4: human-understandable interpretation theory
 
-The demo uses fixed toy data so it is reliable for live EMNLP presentation. Each network has its own graph, admissible term library, candidate specs, fit evidence, refinement step, and Stage 4 human-readable theory. It is meant to illustrate the interface and pipeline semantics, not to replace the full R fitting workflow.
+This hosted version replays cached stage records so it is reliable for
+presentation and review; the intake diagnostics are computed from the network
+data at load time.
+
+## Live pipeline mode
+
+The demo also ships with a live mode (`live.js`) that runs the real pipeline
+end-to-end — R builds the valid term library and screens candidates with fast
+MPLE fits, an LLM proposes formulas and one checked edit, and the LLM writes
+the final model-grounded interpretation, with every Stage Input/Output pane
+showing the real prompts and responses. Live mode needs the full FORGE
+codebase (R with the `ergm`/`network` packages, a local pipeline server, and
+an OpenRouter API key), so it is not active on this static site: the run bar
+appears automatically when the demo is served by the FORGE live server. See
+the FORGE system distribution for setup instructions.
+
+## Run locally (cached mode)
+
+```bash
+python3 -m http.server 8765
+# open http://127.0.0.1:8765
+```

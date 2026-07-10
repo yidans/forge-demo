@@ -25,6 +25,65 @@
         </div>
       </header>
 
+      <section id="live-bar" class="live-bar" hidden aria-label="Live pipeline run">
+        <div class="live-field">
+          <label for="live-source">Network</label>
+          <select id="live-source">
+            <option value="school" selected>School</option>
+            <option value="lab">Lab</option>
+            <option value="neighborhood">Neighborhood</option>
+            <option value="custom">Custom JSON</option>
+          </select>
+        </div>
+        <div class="live-field">
+          <label for="live-model">Model</label>
+          <select id="live-model"></select>
+        </div>
+        <div class="live-field grow">
+          <label for="live-actors">Actors</label>
+          <input id="live-actors" type="text" />
+        </div>
+        <div class="live-field grow">
+          <label for="live-tie">Tie meaning</label>
+          <input id="live-tie" type="text" />
+        </div>
+        <div class="live-field grow">
+          <label for="live-constraint">Constraint</label>
+          <input id="live-constraint" type="text" />
+        </div>
+        <button id="live-run" class="primary-button live-run" type="button">
+          <span aria-hidden="true">&#9658;</span>
+          <span>Run live pipeline</span>
+        </button>
+        <span id="live-status" class="live-status" data-state="idle">Live server connected — run the real pipeline on this network.</span>
+        <div id="live-custom-wrap" class="live-custom" hidden>
+          <label for="live-custom">Custom network JSON — {"directed": false, "nodes": [{"id": "a", "attrs": {"team": "X"}}, {"id": "b", "attrs": {"team": "Y"}}], "edges": [["a", "b"]]}</label>
+          <textarea id="live-custom" rows="6" spellcheck="false">{
+  "directed": false,
+  "nodes": [
+    {"id": "a", "attrs": {"team": "X", "level": "junior"}},
+    {"id": "b", "attrs": {"team": "X", "level": "senior"}},
+    {"id": "c", "attrs": {"team": "X", "level": "junior"}},
+    {"id": "d", "attrs": {"team": "Y", "level": "senior"}},
+    {"id": "e", "attrs": {"team": "Y", "level": "junior"}},
+    {"id": "f", "attrs": {"team": "Y", "level": "junior"}},
+    {"id": "g", "attrs": {"team": "Z", "level": "senior"}},
+    {"id": "h", "attrs": {"team": "Z", "level": "junior"}},
+    {"id": "i", "attrs": {"team": "Z", "level": "senior"}},
+    {"id": "j", "attrs": {"team": "X", "level": "senior"}},
+    {"id": "k", "attrs": {"team": "Y", "level": "senior"}},
+    {"id": "l", "attrs": {"team": "Z", "level": "junior"}}
+  ],
+  "edges": [
+    ["a", "b"], ["a", "c"], ["b", "c"], ["b", "j"], ["c", "j"],
+    ["d", "e"], ["d", "f"], ["e", "f"], ["d", "k"], ["f", "k"],
+    ["g", "h"], ["g", "i"], ["h", "i"], ["i", "l"], ["g", "l"],
+    ["j", "d"], ["k", "g"], ["e", "l"]
+  ]
+}</textarea>
+        </div>
+      </section>
+
       <section class="workspace">
         <aside class="stage-rail" aria-label="Pipeline stages">
           <div class="stage-title">Pipeline</div>
@@ -124,5 +183,6 @@
     </main>
 
     <script src="./app.js"></script>
+    <script src="./live.js"></script>
   </body>
 </html>
