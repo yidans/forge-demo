@@ -870,3 +870,14 @@ button {
   overflow-y: auto;
   padding-right: 6px;
 }
+
+/* Header run-status duplicates the stage rail below — always hidden. */
+.run-status {
+  display: none;
+}
+
+/* In live mode the run bar's Network dropdown replaces the header picker;
+   keep the header picker only for cached/static hosting (no run bar there). */
+body.forge-live .network-picker {
+  display: none;
+}
