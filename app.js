@@ -468,7 +468,7 @@ return one JSON edit from L*.`,
         lens: "final interpretation",
         mechanismTitle: "What the model supports",
         mechanismCopy:
-          "The selected model includes shared activities, grade cohorts, shared friends, and a few well-connected students.",
+          "The model says students tend to befriend others in the same club or grade, that friends of friends often become friends, and that a few students are far more connected than the rest.",
         metrics: [
           ["5", "terms"],
           ["2", "attributes"],
@@ -489,25 +489,24 @@ return one JSON edit from L*.`,
           ["LLM proposal", 70.2],
           ["After revision", 66.8]
         ],
-        prompt: `input:
-fitted terms + coefficients
-BIC and GOF checks
-revision history
+        prompt: `Explain the fitted model in plain language.
 
-task:
-summarize fitted terms
-separate evidence from caveats
-avoid causal claims`,
+You are given the model's terms and coefficients, its BIC score and
+goodness-of-fit checks, and the revision history.
+
+Write a short, human-readable summary of how these ties form: say who
+is more likely to connect, keep the supported findings separate from
+the caveats, and make no causal claims.`,
         output: `{
-  "summary": "Shared contexts and shared friends explain friendship.",
-  "supported_terms": ["club", "grade", "shared friends", "hubs"],
-  "caveat": "Conditional, not causal."
+  "summary": "Students are more likely to become friends when they are in the same activity club or the same grade, and when they already share friends. A few students have far more friends than the rest.",
+  "supported_by": ["same club", "same grade", "shared friends", "popular students"],
+  "caveat": "These are patterns the model found, not proof that one thing causes another."
 }`,
         outputBadge: "interpretation JSON",
         highlight: "final",
-        theoryHeadline: "Fitted terms explain friendship structure",
+        theoryHeadline: "Students befriend others in the same club and grade",
         theory:
-          "Shared activities and grade cohorts are associated with friendship. Shared friends and a few well-connected students add structure. These are conditional associations, not causal effects."
+          "Students are more likely to make friends when they share an activity club or the same grade, and when they already have friends in common. A handful of students are much more connected than the rest. These are patterns in the data, not causal effects."
       }
     ]
   },
@@ -826,7 +825,7 @@ return one JSON edit from L*.`,
         lens: "final interpretation",
         mechanismTitle: "What the model supports",
         mechanismCopy:
-          "The selected model includes research areas, shared collaborators, role similarity, and bridge researchers.",
+          "The model says researchers tend to work with others in the same area or role, that shared collaborators lead to new collaborations, and that a few researchers bridge otherwise separate groups.",
         metrics: [
           ["5", "terms"],
           ["2", "attributes"],
@@ -847,25 +846,24 @@ return one JSON edit from L*.`,
           ["LLM proposal", 82.7],
           ["After revision", 78.9]
         ],
-        prompt: `input:
-fitted terms + coefficients
-BIC and GOF checks
-revision history
+        prompt: `Explain the fitted model in plain language.
 
-task:
-summarize fitted terms
-separate evidence from caveats
-avoid causal claims`,
+You are given the model's terms and coefficients, its BIC score and
+goodness-of-fit checks, and the revision history.
+
+Write a short, human-readable summary of how these ties form: say who
+is more likely to connect, keep the supported findings separate from
+the caveats, and make no causal claims.`,
         output: `{
-  "summary": "Area and shared ties explain collaboration.",
-  "supported_terms": ["area", "shared collaborators", "role", "bridges"],
-  "caveat": "Conditional, not causal."
+  "summary": "Researchers are more likely to collaborate when they work in the same research area or have a similar role, and when they already share collaborators. A few researchers connect otherwise separate groups.",
+  "supported_by": ["same area", "similar role", "shared collaborators", "bridge researchers"],
+  "caveat": "These are patterns the model found, not proof that one thing causes another."
 }`,
         outputBadge: "interpretation JSON",
         highlight: "final",
-        theoryHeadline: "Fitted terms explain collaboration structure",
+        theoryHeadline: "Researchers collaborate within their area and shared contacts",
         theory:
-          "Same-area ties and shared collaborators are associated with collaboration. Role similarity and bridge researchers add structure. These are conditional associations, not causal effects."
+          "Researchers are more likely to work together when they are in the same research area or have similar roles, and when they already have collaborators in common. A few well-connected researchers bridge otherwise separate groups. These are patterns in the data, not causal effects."
       }
     ]
   },
@@ -1183,7 +1181,7 @@ return one JSON edit from L*.`,
         lens: "final interpretation",
         mechanismTitle: "What the model supports",
         mechanismCopy:
-          "The selected model includes residential blocks, shared neighbors, helper hubs, and residence tenure.",
+          "The model says households tend to help others on the same block and neighbors they already share, that a few households act as hubs helping many others, and that similar length of residence matters too.",
         metrics: [
           ["5", "terms"],
           ["2", "attributes"],
@@ -1204,25 +1202,24 @@ return one JSON edit from L*.`,
           ["LLM proposal", 76.4],
           ["After revision", 72.9]
         ],
-        prompt: `input:
-fitted terms + coefficients
-BIC and GOF checks
-revision history
+        prompt: `Explain the fitted model in plain language.
 
-task:
-summarize fitted terms
-separate evidence from caveats
-avoid causal claims`,
+You are given the model's terms and coefficients, its BIC score and
+goodness-of-fit checks, and the revision history.
+
+Write a short, human-readable summary of how these ties form: say who
+is more likely to connect, keep the supported findings separate from
+the caveats, and make no causal claims.`,
         output: `{
-  "summary": "Blocks and shared neighbors explain mutual aid.",
-  "supported_terms": ["block", "shared neighbors", "hubs", "tenure"],
-  "caveat": "Conditional, not causal."
+  "summary": "Households are more likely to help each other when they live on the same block and when they already share neighbors they both help. A few households help many others, and neighbors who have lived there a similar length of time help each other a bit more.",
+  "supported_by": ["same block", "shared neighbors", "helper hubs", "similar tenure"],
+  "caveat": "These are patterns the model found, not proof that one thing causes another."
 }`,
         outputBadge: "interpretation JSON",
         highlight: "final",
-        theoryHeadline: "Fitted terms explain mutual-aid structure",
+        theoryHeadline: "Neighbors help others on the same block and shared contacts",
         theory:
-          "Same-block ties and shared neighbors are associated with mutual aid. Helper hubs and residence tenure add structure. These are conditional associations, not causal effects."
+          "Households are more likely to help each other when they live on the same block and when they already share neighbors in common. A few households act as hubs that help many others, and neighbors who have lived there a similar length of time are somewhat more likely to help each other. These are patterns in the data, not causal effects."
       }
     ]
   }

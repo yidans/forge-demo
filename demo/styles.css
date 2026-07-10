@@ -898,9 +898,11 @@ body.forge-live .network-picker {
 
 /* ================= Single-screen dashboard (wide layout) =================
    Lock the whole app to one viewport; only inner regions (code panes, term
-   list, long copy) scroll. Applies only to the full three-column layout —
-   the narrow/stacked responsive modes below keep normal page scrolling. */
-@media (min-width: 1181px) {
+   list, long copy) scroll. Applies only to the full three-column layout on a
+   tall-enough (fullscreen) viewport — in a shorter window, or on narrow/
+   stacked layouts, the page keeps its normal size and scrolls so text is
+   never compressed. */
+@media (min-width: 1181px) and (min-height: 880px) {
   html,
   body {
     height: 100%;
