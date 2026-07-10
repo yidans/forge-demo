@@ -337,18 +337,20 @@ explain the network formation.
 Use only terms from L*. Include edges. Provide expected signs.
 Network diagnostics suggest clustering, homophily, and degree skew.`,
         output: `{
-  "label": "Candidate 1",
-  "formula": [
-    "edges",
-    "gwesp(0.5, fixed=TRUE)",
-    "nodematch(\\"club\\")",
-    "gwdegree(0.5, fixed=TRUE)"
-  ],
-  "expected_effects": {
-    "gwesp(0.5, fixed=TRUE)": "+",
-    "nodematch(\\"club\\")": "+",
-    "gwdegree(0.5, fixed=TRUE)": "+"
-  }
+  "specifications": [
+    {
+      "label": "Candidate 1",
+      "formula": ["edges", "gwesp(0.5, fixed=TRUE)", "nodematch(\\"club\\")", "gwdegree(0.5, fixed=TRUE)"]
+    },
+    {
+      "label": "Candidate 2",
+      "formula": ["edges", "gwesp(0.5, fixed=TRUE)", "nodematch(\\"grade\\")", "absdiff(\\"activity\\")"]
+    },
+    {
+      "label": "Candidate 3",
+      "formula": ["edges", "gwesp(0.5, fixed=TRUE)", "gwdsp(0.5, fixed=TRUE)", "nodematch(\\"club\\")", "gwdegree(0.5, fixed=TRUE)"]
+    }
+  ]
 }`,
         outputBadge: "llm json",
         highlight: "closure",
@@ -693,18 +695,20 @@ explain the network formation.
 Use only terms from L*. Include edges. Provide expected signs.
 Diagnostics suggest same-area collaboration, closure, and bridge researchers.`,
         output: `{
-  "label": "Candidate 1",
-  "formula": [
-    "edges",
-    "gwesp(0.5, fixed=TRUE)",
-    "nodematch(\\"area\\")",
-    "gwdegree(0.5, fixed=TRUE)"
-  ],
-  "expected_effects": {
-    "gwesp(0.5, fixed=TRUE)": "+",
-    "nodematch(\\"area\\")": "+",
-    "gwdegree(0.5, fixed=TRUE)": "+"
-  }
+  "specifications": [
+    {
+      "label": "Candidate 1",
+      "formula": ["edges", "gwesp(0.5, fixed=TRUE)", "nodematch(\\"area\\")", "gwdegree(0.5, fixed=TRUE)"]
+    },
+    {
+      "label": "Candidate 2",
+      "formula": ["edges", "gwesp(0.5, fixed=TRUE)", "nodematch(\\"role\\")", "absdiff(\\"seniority\\")"]
+    },
+    {
+      "label": "Candidate 3",
+      "formula": ["edges", "gwesp(0.5, fixed=TRUE)", "gwdsp(0.5, fixed=TRUE)", "nodematch(\\"area\\")", "gwdegree(0.5, fixed=TRUE)"]
+    }
+  ]
 }`,
         outputBadge: "llm json",
         highlight: "closure",
@@ -1048,18 +1052,20 @@ explain the network formation.
 Use only terms from L*. Include edges. Provide expected signs.
 Diagnostics suggest same-block support, closure, and helper hubs.`,
         output: `{
-  "label": "Candidate 1",
-  "formula": [
-    "edges",
-    "gwesp(0.5, fixed=TRUE)",
-    "nodematch(\\"block\\")",
-    "gwdegree(0.5, fixed=TRUE)"
-  ],
-  "expected_effects": {
-    "gwesp(0.5, fixed=TRUE)": "+",
-    "nodematch(\\"block\\")": "+",
-    "gwdegree(0.5, fixed=TRUE)": "+"
-  }
+  "specifications": [
+    {
+      "label": "Candidate 1",
+      "formula": ["edges", "gwesp(0.5, fixed=TRUE)", "nodematch(\\"block\\")", "gwdegree(0.5, fixed=TRUE)"]
+    },
+    {
+      "label": "Candidate 2",
+      "formula": ["edges", "gwesp(0.5, fixed=TRUE)", "nodematch(\\"tenure_group\\")", "absdiff(\\"tenure_years\\")"]
+    },
+    {
+      "label": "Candidate 3",
+      "formula": ["edges", "gwesp(0.5, fixed=TRUE)", "gwdsp(0.5, fixed=TRUE)", "nodematch(\\"block\\")", "gwdegree(0.5, fixed=TRUE)"]
+    }
+  ]
 }`,
         outputBadge: "llm json",
         highlight: "closure",
