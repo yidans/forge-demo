@@ -389,7 +389,13 @@
     ];
     stage.chartLabel = "screening next";
     stage.prompt = `system:\n${ctx.propose.prompt.system}\n\nuser:\n${ctx.propose.prompt.user}`;
-    stage.output = ctx.propose.raw_response;
+    stage.output = JSON.stringify({
+      specifications: specs.map((s) => ({
+        label: s.label,
+        formula: s.formula,
+        library_compliant: s.library_compliant
+      }))
+    }, null, 2);
     stage.outputBadge = "llm json";
     stage.highlight = "closure";
     stage.theory = `The LLM's proposals are stories about ${ctx.demo.tieKind}: ${first.formula.filter((t) => t !== "edges").map((t) => glossFor(t)).join(", ")}. Stage 2 decides which story the data supports.`;
