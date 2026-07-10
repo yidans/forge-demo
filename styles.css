@@ -85,6 +85,20 @@ button {
   font-weight: 760;
 }
 
+.source-link {
+  display: inline-block;
+  margin-top: 5px;
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.source-link:hover,
+.source-link:focus-visible {
+  text-decoration: underline;
+}
+
 .top-actions {
   display: flex;
   align-items: flex-end;
