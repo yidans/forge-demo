@@ -1246,6 +1246,7 @@ const metricGrid = document.getElementById("metric-grid");
 const promptView = document.getElementById("prompt-view");
 const outputView = document.getElementById("output-view");
 const outputBadge = document.getElementById("output-badge");
+const summaryLabel = document.getElementById("summary-label");
 const theoryHeadline = document.getElementById("theory-headline");
 const theoryCopy = document.getElementById("theory-copy");
 const termList = document.getElementById("term-list");
@@ -1538,6 +1539,9 @@ function setStage(index) {
   promptView.textContent = stage.prompt;
   outputView.textContent = stage.output;
   outputBadge.textContent = stage.outputBadge;
+  if (summaryLabel) {
+    summaryLabel.textContent = stage.id === "interpret" ? "Final Interpretation" : "In progress";
+  }
   theoryHeadline.textContent = stage.theoryHeadline || stage.mechanismTitle;
   theoryCopy.textContent = stage.theory;
   bestModelLabel.textContent = stage.chartLabel;

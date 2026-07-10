@@ -619,7 +619,7 @@
       demo.stages.push(interpretStage(ctx));
       showLatestStage();
 
-      setLiveStatus("Live run complete — all six stages are real outputs.", "done");
+      setLiveStatus("", "done");
     } catch (error) {
       setLiveStatus(`Live run stopped: ${error.message}`, "error");
     } finally {
@@ -663,6 +663,7 @@
     });
     el.run.addEventListener("click", runPipeline);
     fillBrief(el.source.value);
+    document.body.classList.add("forge-live");
     el.bar.hidden = false;
   }
 
