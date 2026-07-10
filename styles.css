@@ -881,3 +881,136 @@ button {
 body.forge-live .network-picker {
   display: none;
 }
+
+/* ================= Single-screen dashboard (wide layout) =================
+   Lock the whole app to one viewport; only inner regions (code panes, term
+   list, long copy) scroll. Applies only to the full three-column layout —
+   the narrow/stacked responsive modes below keep normal page scrolling. */
+@media (min-width: 1181px) {
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .app-shell {
+    height: 100vh;
+    min-height: 0;
+    gap: 10px;
+    padding: 12px;
+    overflow: hidden;
+  }
+
+  .topbar {
+    min-height: 48px;
+    padding: 10px 18px;
+  }
+
+  .workspace {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .stage-rail,
+  .main-panel,
+  .right-panel {
+    min-height: 0;
+  }
+
+  .stage-rail {
+    overflow-y: auto;
+  }
+
+  .main-panel {
+    gap: 12px;
+    padding: 14px;
+    overflow: hidden;
+  }
+
+  .canvas-row {
+    flex: 1.5 1 0;
+    min-height: 0;
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .network-frame,
+  #network-svg {
+    min-height: 0;
+  }
+
+  .stage-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  #mechanism-copy {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+  }
+
+  .metric-grid {
+    flex: 0 0 auto;
+    margin-top: 12px;
+  }
+
+  .metric {
+    min-height: 60px;
+  }
+
+  .evidence-grid {
+    flex: 1 1 0;
+    min-height: 0;
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .code-panel {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+  }
+
+  .right-panel {
+    gap: 10px;
+    padding: 12px;
+    overflow: hidden;
+  }
+
+  .summary-band {
+    flex: 0 1 auto;
+    min-height: 0;
+    max-height: 38%;
+    overflow-y: auto;
+  }
+
+  .term-section {
+    flex: 1 1 0;
+    min-height: 108px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .term-section .term-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    gap: 6px;
+    padding: 10px;
+  }
+
+  .term-section .term-chip {
+    min-height: 0;
+    padding: 6px 8px;
+  }
+
+  .chart-section,
+  .audit-section {
+    flex: 0 0 auto;
+  }
+
+  .live-bar {
+    padding: 10px 14px;
+  }
+}
