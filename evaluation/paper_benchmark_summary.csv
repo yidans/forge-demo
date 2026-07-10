@@ -1,0 +1,13 @@
+dataset,display_name,non_null_converged,bic_edge_null,bic_random_k,bic_m3,bic_m4,bic_m5,bic_forge
+faux_mesa,Faux Mesa,TRUE,2296,2216,1536,1491,1508,1447
+faux_dixon,Faux Dixon,TRUE,8672,7741,6177,6270,6362,6172
+faux_magnolia,Faux Magnolia,TRUE,15594,12727,11304,11139,10975,10967
+krackhardt,Krackhardt Managers,TRUE,584,515,535,526,518,518
+lazega,Lazega Lawyers,TRUE,6215,6111,4245,4182,4121,4083
+kapferer,Kapferer Tailor,TRUE,4150,4120,3396,3364,3347,3321
+manufacturing_emails,Manufacturing Email,TRUE,6910,6800,6810,6768,6744,6729
+noordin_top,Noordin Top,TRUE,1489,1386,1091,1075,1059,949
+glasgow_s50,Glasgow s50,TRUE,924,922,636,629,623,545
+florentine,Florentine Families,TRUE,132,122,123,121,120,101
+enron_emails,Enron Email,FALSE,,,,,,
+caltech_36,Caltech36,FALSE,,,,,,

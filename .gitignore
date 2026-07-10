@@ -1,0 +1,27 @@
+# macOS and Office temporary files
+.DS_Store
+~$*
+
+# Local secrets and R session state
+.env
+.Rhistory
+.RData
+.Rproj.user/
+
+# Disposable working files
+tmp/
+dist/
+video/
+prompts/
+results/*
+!results/.gitkeep
+*.zip
+
+# LaTeX build by-products (keep source, PDF, and BBL files)
+**/*.aux
+**/*.fdb_latexmk
+**/*.fls
+**/*.blg
+**/*.out
+**/main.log
+**/check_*.log
