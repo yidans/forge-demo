@@ -997,13 +997,13 @@ body.forge-live .network-picker {
   .summary-band {
     flex: 0 1 auto;
     min-height: 0;
-    max-height: 38%;
+    max-height: 26%;
     overflow-y: auto;
   }
 
   .term-section {
     flex: 1 1 0;
-    min-height: 108px;
+    min-height: 150px;
     display: flex;
     flex-direction: column;
   }
@@ -1017,8 +1017,13 @@ body.forge-live .network-picker {
   }
 
   .term-section .term-chip {
+    flex-shrink: 0;
     min-height: 0;
-    padding: 6px 8px;
+    padding: 5px 8px;
+  }
+
+  .term-section .term-meaning {
+    margin-top: 1px;
   }
 
   .chart-section,
