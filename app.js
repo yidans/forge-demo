@@ -322,20 +322,22 @@ construct the valid ERGM term library L*.`,
         ],
         terms: ["edges", 'gwesp', 'nodematch(club)', 'gwdegree'],
         guardrails: guardrailSets.spec,
-        chartLabel: "M4 selected",
+        chartLabel: "Candidate 1 selected",
         bic: [
-          ["M4", 70.2],
-          ["M5", 72.5],
-          ["M6", 74.8]
+          ["Candidate 1", 70.2],
+          ["Candidate 2", 72.5],
+          ["Candidate 3", 74.8]
         ],
         prompt: `system:
 You are an ERGM expert. Return JSON only.
 
 user:
-Use only L*. Include edges. Explain expected signs.
+Propose 3 candidate ERGM specifications that best
+explain the network formation.
+Use only terms from L*. Include edges. Provide expected signs.
 Network diagnostics suggest clustering, homophily, and degree skew.`,
         output: `{
-  "strategy": "M4",
+  "label": "Candidate 1",
   "formula": [
     "edges",
     "gwesp(0.5, fixed=TRUE)",
@@ -369,30 +371,30 @@ Network diagnostics suggest clustering, homophily, and degree skew.`,
           ["70.2", "best pseudo-BIC"],
           ["0.71", "AUPRC"],
           ["2.8", "max Wald |z|"],
-          ["M4", "winner"]
+          ["Candidate 1", "winner"]
         ],
         terms: ["edges", 'gwesp', 'nodematch(club)', 'gwdegree'],
         guardrails: guardrailSets.fit,
-        chartLabel: "M4 winner",
+        chartLabel: "Candidate 1 winner",
         bic: [
           ["Null", 96.4],
-          ["M4", 70.2],
-          ["M5", 72.5],
-          ["M6", 74.8]
+          ["Candidate 1", 70.2],
+          ["Candidate 2", 72.5],
+          ["Candidate 3", 74.8]
         ],
         prompt: `candidate catalog:
-M3_null = edges
-M4 = edges + gwesp + nodematch(club) + gwdegree
-M5 = edges + gwesp + nodematch(grade) + absdiff(activity)
-M6 = edges + gwesp + gwdsp + nodematch(club) + gwdegree
+Null = edges
+Candidate 1 = edges + gwesp + nodematch(club) + gwdegree
+Candidate 2 = edges + gwesp + nodematch(grade) + absdiff(activity)
+Candidate 3 = edges + gwesp + gwdsp + nodematch(club) + gwdegree
 
 task:
 fit MPLE and rank by pseudo-BIC, AUPRC, diagnostics.`,
         output: `[
-  {"spec": "M3_null", "pseudo_bic": 96.4, "auprc": 0.39},
-  {"spec": "M4", "pseudo_bic": 70.2, "auprc": 0.71},
-  {"spec": "M5", "pseudo_bic": 72.5, "auprc": 0.68},
-  {"spec": "M6", "pseudo_bic": 74.8, "auprc": 0.70}
+  {"spec": "Null", "pseudo_bic": 96.4, "auprc": 0.39},
+  {"spec": "Candidate 1", "pseudo_bic": 70.2, "auprc": 0.71},
+  {"spec": "Candidate 2", "pseudo_bic": 72.5, "auprc": 0.68},
+  {"spec": "Candidate 3", "pseudo_bic": 74.8, "auprc": 0.70}
 ]`,
         outputBadge: "fit table",
         highlight: "winner",
@@ -427,7 +429,7 @@ fit MPLE and rank by pseudo-BIC, AUPRC, diagnostics.`,
         guardrails: guardrailSets.refine,
         chartLabel: "refined",
         bic: [
-          ["M4", 70.2],
+          ["Candidate 1", 70.2],
           ["+grade", 66.8]
         ],
         prompt: `current model:
@@ -676,20 +678,22 @@ construct the valid ERGM term library L*.`,
         ],
         terms: ["edges", 'gwesp', 'nodematch(area)', 'gwdegree'],
         guardrails: guardrailSets.spec,
-        chartLabel: "L4 selected",
+        chartLabel: "Candidate 1 selected",
         bic: [
-          ["L4", 82.7],
-          ["L5", 85.1],
-          ["L6", 86.9]
+          ["Candidate 1", 82.7],
+          ["Candidate 2", 85.1],
+          ["Candidate 3", 86.9]
         ],
         prompt: `system:
 You are an ERGM expert. Return JSON only.
 
 user:
-Use only L*. Include edges. Explain expected signs.
+Propose 3 candidate ERGM specifications that best
+explain the network formation.
+Use only terms from L*. Include edges. Provide expected signs.
 Diagnostics suggest same-area collaboration, closure, and bridge researchers.`,
         output: `{
-  "strategy": "L4",
+  "label": "Candidate 1",
   "formula": [
     "edges",
     "gwesp(0.5, fixed=TRUE)",
@@ -723,30 +727,30 @@ Diagnostics suggest same-area collaboration, closure, and bridge researchers.`,
           ["82.7", "best pseudo-BIC"],
           ["0.74", "AUPRC"],
           ["2.5", "max Wald |z|"],
-          ["L4", "winner"]
+          ["Candidate 1", "winner"]
         ],
         terms: ["edges", 'gwesp', 'nodematch(area)', 'gwdegree'],
         guardrails: guardrailSets.fit,
-        chartLabel: "L4 winner",
+        chartLabel: "Candidate 1 winner",
         bic: [
           ["Null", 104.8],
-          ["L4", 82.7],
-          ["L5", 85.1],
-          ["L6", 86.9]
+          ["Candidate 1", 82.7],
+          ["Candidate 2", 85.1],
+          ["Candidate 3", 86.9]
         ],
         prompt: `candidate catalog:
-L3_null = edges
-L4 = edges + gwesp + nodematch(area) + gwdegree
-L5 = edges + gwesp + nodematch(role) + absdiff(seniority)
-L6 = edges + gwesp + gwdsp + nodematch(area) + gwdegree
+Null = edges
+Candidate 1 = edges + gwesp + nodematch(area) + gwdegree
+Candidate 2 = edges + gwesp + nodematch(role) + absdiff(seniority)
+Candidate 3 = edges + gwesp + gwdsp + nodematch(area) + gwdegree
 
 task:
 fit MPLE and rank by pseudo-BIC, AUPRC, diagnostics.`,
         output: `[
-  {"spec": "L3_null", "pseudo_bic": 104.8, "auprc": 0.41},
-  {"spec": "L4", "pseudo_bic": 82.7, "auprc": 0.74},
-  {"spec": "L5", "pseudo_bic": 85.1, "auprc": 0.69},
-  {"spec": "L6", "pseudo_bic": 86.9, "auprc": 0.72}
+  {"spec": "Null", "pseudo_bic": 104.8, "auprc": 0.41},
+  {"spec": "Candidate 1", "pseudo_bic": 82.7, "auprc": 0.74},
+  {"spec": "Candidate 2", "pseudo_bic": 85.1, "auprc": 0.69},
+  {"spec": "Candidate 3", "pseudo_bic": 86.9, "auprc": 0.72}
 ]`,
         outputBadge: "fit table",
         highlight: "winner",
@@ -781,7 +785,7 @@ fit MPLE and rank by pseudo-BIC, AUPRC, diagnostics.`,
         guardrails: guardrailSets.refine,
         chartLabel: "refined",
         bic: [
-          ["L4", 82.7],
+          ["Candidate 1", 82.7],
           ["+role", 78.9]
         ],
         prompt: `current model:
@@ -1029,20 +1033,22 @@ construct the valid ERGM term library L*.`,
         ],
         terms: ["edges", 'gwesp', 'nodematch(block)', 'gwdegree'],
         guardrails: guardrailSets.spec,
-        chartLabel: "N4 selected",
+        chartLabel: "Candidate 1 selected",
         bic: [
-          ["N4", 76.4],
-          ["N5", 79.0],
-          ["N6", 80.6]
+          ["Candidate 1", 76.4],
+          ["Candidate 2", 79.0],
+          ["Candidate 3", 80.6]
         ],
         prompt: `system:
 You are an ERGM expert. Return JSON only.
 
 user:
-Use only L*. Include edges. Explain expected signs.
+Propose 3 candidate ERGM specifications that best
+explain the network formation.
+Use only terms from L*. Include edges. Provide expected signs.
 Diagnostics suggest same-block support, closure, and helper hubs.`,
         output: `{
-  "strategy": "N4",
+  "label": "Candidate 1",
   "formula": [
     "edges",
     "gwesp(0.5, fixed=TRUE)",
@@ -1076,30 +1082,30 @@ Diagnostics suggest same-block support, closure, and helper hubs.`,
           ["76.4", "best pseudo-BIC"],
           ["0.73", "AUPRC"],
           ["2.7", "max Wald |z|"],
-          ["N4", "winner"]
+          ["Candidate 1", "winner"]
         ],
         terms: ["edges", 'gwesp', 'nodematch(block)', 'gwdegree'],
         guardrails: guardrailSets.fit,
-        chartLabel: "N4 winner",
+        chartLabel: "Candidate 1 winner",
         bic: [
           ["Null", 99.3],
-          ["N4", 76.4],
-          ["N5", 79.0],
-          ["N6", 80.6]
+          ["Candidate 1", 76.4],
+          ["Candidate 2", 79.0],
+          ["Candidate 3", 80.6]
         ],
         prompt: `candidate catalog:
-N3_null = edges
-N4 = edges + gwesp + nodematch(block) + gwdegree
-N5 = edges + gwesp + nodematch(tenure_group) + absdiff(tenure_years)
-N6 = edges + gwesp + gwdsp + nodematch(block) + gwdegree
+Null = edges
+Candidate 1 = edges + gwesp + nodematch(block) + gwdegree
+Candidate 2 = edges + gwesp + nodematch(tenure_group) + absdiff(tenure_years)
+Candidate 3 = edges + gwesp + gwdsp + nodematch(block) + gwdegree
 
 task:
 fit MPLE and rank by pseudo-BIC, AUPRC, diagnostics.`,
         output: `[
-  {"spec": "N3_null", "pseudo_bic": 99.3, "auprc": 0.38},
-  {"spec": "N4", "pseudo_bic": 76.4, "auprc": 0.73},
-  {"spec": "N5", "pseudo_bic": 79.0, "auprc": 0.67},
-  {"spec": "N6", "pseudo_bic": 80.6, "auprc": 0.70}
+  {"spec": "Null", "pseudo_bic": 99.3, "auprc": 0.38},
+  {"spec": "Candidate 1", "pseudo_bic": 76.4, "auprc": 0.73},
+  {"spec": "Candidate 2", "pseudo_bic": 79.0, "auprc": 0.67},
+  {"spec": "Candidate 3", "pseudo_bic": 80.6, "auprc": 0.70}
 ]`,
         outputBadge: "fit table",
         highlight: "winner",
@@ -1134,7 +1140,7 @@ fit MPLE and rank by pseudo-BIC, AUPRC, diagnostics.`,
         guardrails: guardrailSets.refine,
         chartLabel: "refined",
         bic: [
-          ["N4", 76.4],
+          ["Candidate 1", 76.4],
           ["+tenure", 72.9]
         ],
         prompt: `current model:
@@ -1357,24 +1363,21 @@ function renderNetwork(stage) {
   demo.edges.forEach((edge) => {
     const source = demo.nodeById[edge.source];
     const target = demo.nodeById[edge.target];
-    const highlight = shouldHighlightEdge(edge, stage.highlight, demo);
-    const muted = stage.highlight !== "raw" && !highlight;
     edgeLayer.appendChild(svgEl("line", {
       x1: source.x,
       y1: source.y,
       x2: target.x,
       y2: target.y,
-      class: `edge${highlight ? " highlight" : ""}${muted ? " muted" : ""}`
+      class: "edge"
     }));
   });
 
   demo.nodes.forEach((node) => {
     const group = svgEl("g", { transform: `translate(${node.x}, ${node.y})` });
-    const highlight = shouldHighlightNode(node, stage.highlight, demo);
     const color = colorForGroup(demo, node.group);
     group.appendChild(svgEl("circle", {
       r: 23 + Math.min(demo.degreeById[node.id], 5),
-      class: `node-ring ${highlight ? "highlight" : ""}`,
+      class: "node-ring",
       fill: color
     }));
     group.appendChild(svgEl("circle", {
