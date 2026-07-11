@@ -1,0 +1,36 @@
+SYSTEM PROMPT:
+You are an expert network scientist for ERGM specification. You have an admissible term library and diagnostics. Produce valid JSON only.
+
+USER PROMPT:
+**Inputs**
+• Network: directed = false, bipartite = false, |V| = 79
+• Diagnostics: edges=200, density=0.064914, degree_quantiles=[ 0,  2,  4,  6, 41], isolates=5, reciprocity=NA, clustering=0.265499
+• Admissible library (use these names exactly): edges, gwesp(decay=0.25, fixed=TRUE), gwdsp(decay=0.25, fixed=TRUE), gwesp(decay=0.5, fixed=TRUE), gwdsp(decay=0.5, fixed=TRUE), gwdegree(decay=0.25, fixed=TRUE), gwdegree(decay=0.5, fixed=TRUE), twopath, nodecov("communication_degree"), absdiff("communication_degree"), nodecov("contact"), absdiff("contact"), nodematch("educ"), nodefactor("educ"), nodematch("group"), nodefactor("group"), nodematch("kinship_ties"), nodefactor("kinship_ties"), nodematch("locations_count"), nodefactor("locations_count"), nodematch("meeting_count"), nodefactor("meeting_count"), nodecov("military"), absdiff("military"), nodematch("nation"), nodefactor("nation"), nodematch("noordin"), nodefactor("noordin"), nodemix("noordin"), nodematch("org_affiliations"), nodefactor("org_affiliations"), nodecov("role"), absdiff("role"), nodematch("school_ties"), nodefactor("school_ties"), nodematch("spiritual_ties"), nodefactor("spiritual_ties"), nodematch("status"), nodefactor("status"), nodemix("status")
+• Attribute types: communication_degree: classification=numeric, unique=16; contact: classification=numeric, unique=11; educ: classification=categorical, unique=8; group: classification=categorical, unique=5; kinship_ties: classification=categorical, unique=4; locations_count: classification=categorical, unique=6; meeting_count: classification=categorical, unique=8; military: classification=numeric, unique=9; nation: classification=categorical, unique=3; noordin: classification=categorical, unique=2; org_affiliations: classification=categorical, unique=5; role: classification=numeric, unique=12; school_ties: classification=categorical, unique=5; spiritual_ties: classification=categorical, unique=5; status: classification=categorical, unique=3
+• Dyad covariates for edgecov(): []
+
+**System brief (concise)**
+• Actors: Actors are terrorists.
+• Tie meaning: A tie means collaboration.
+• Constraint: Collaboration is constrained by group membership, role, and shared characteristics.
+
+**Task**
+- Strategy M4: Return exactly 4 terms. All terms must come from the admissible library.
+
+**Rules**
+- Include edges.
+- Prefer GW families; do not use triangle.
+- Respect directed/undirected constraints and attribute types.
+- Use nodemix only if group-size gate is satisfied.
+- Avoid redundant terms unless diagnostics justify them.
+- Provide expected sign (+/-) for each non-edge term.
+- Do not copy attribute names from the example; use only names listed in the admissible library.
+
+**Output JSON ONLY**
+{
+  "specifications": [{
+    "formula": [ ... ],
+    "expected_effects": { ... },
+    "rationale": { ... }
+  }]
+}

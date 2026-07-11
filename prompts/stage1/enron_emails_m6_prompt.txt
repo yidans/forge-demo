@@ -1,0 +1,36 @@
+SYSTEM PROMPT:
+You are an expert network scientist for ERGM specification. You have an admissible term library and diagnostics. Produce valid JSON only.
+
+USER PROMPT:
+**Inputs**
+• Network: directed = true, bipartite = false, |V| = 184
+• Diagnostics: edges=3129, density=0.092421, degree_quantiles=[  0,  16,  29,  44, 160], isolates=2, reciprocity=0.929675, clustering=NA
+• Admissible library (use these names exactly): edges, gwesp(decay=0.25, fixed=TRUE), gwdsp(decay=0.25, fixed=TRUE), gwesp(decay=0.5, fixed=TRUE), gwdsp(decay=0.5, fixed=TRUE), mutual, gwidegree(decay=0.25, fixed=TRUE), gwodegree(decay=0.25, fixed=TRUE), gwidegree(decay=0.5, fixed=TRUE), gwodegree(decay=0.5, fixed=TRUE), ttriple, ctriple, nodematch("role"), nodeifactor("role"), nodeofactor("role")
+• Attribute types: dept: classification=categorical, unique=30; email_id: classification=categorical, unique=184; person_name: classification=categorical, unique=125; role: classification=categorical, unique=9
+• Dyad covariates for edgecov(): []
+
+**System brief (concise)**
+• Actors: Actors are employees.
+• Tie meaning: A tie means email communication.
+• Constraint: Email communication is constrained by department and role.
+
+**Task**
+- Strategy M6: Return between 3 and 8 terms. All terms must come from the admissible library.
+
+**Rules**
+- Include edges.
+- Prefer GW families; do not use triangle.
+- Respect directed/undirected constraints and attribute types.
+- Use nodemix only if group-size gate is satisfied.
+- Avoid redundant terms unless diagnostics justify them.
+- Provide expected sign (+/-) for each non-edge term.
+- Do not copy attribute names from the example; use only names listed in the admissible library.
+
+**Output JSON ONLY**
+{
+  "specifications": [{
+    "formula": [ ... ],
+    "expected_effects": { ... },
+    "rationale": { ... }
+  }]
+}

@@ -1,0 +1,71 @@
+SYSTEM PROMPT
+You are Stage 4 of FORGE: an interpretation LLM for fitted ERGMs.
+Your job is to explain social/network mechanisms, not to select terms or improve the model.
+Use cautious language: ERGM coefficients support conditional association mechanisms, not causal proof.
+If GOF does not pass or diagnostics are weak, say so clearly.
+Return valid JSON only.
+
+USER PROMPT
+Dataset: florentine
+Input source: stage3_refinement
+Specification ID: florentine__M6_unconstrained__01
+Network: name=Florentine Families, nodes=16, directed=false
+Actors: Actors are patrician families.
+Tie meaning: A tie means a marriage alliance.
+Context constraint: Wealth and offices guide alliances.
+
+Final ERGM terms:
+- edges
+- gwesp(decay=0.5,fixed=TRUE)
+- gwdsp(decay=0.5,fixed=TRUE)
+- gwdegree(decay=0.25,fixed=TRUE)
+- nodecov("wealth")
+- absdiff("totalties")
+
+Term mechanism glossary:
+- edges: baseline tie propensity after accounting for all other terms
+- gwesp(decay=0.5,fixed=TRUE): triadic closure and local clustering among connected pairs
+- gwdsp(decay=0.5,fixed=TRUE): shared-partner structure among dyads, including two-path pressure not limited to closed triangles
+- gwdegree(decay=0.25,fixed=TRUE): degree heterogeneity and hub tendency in undirected networks
+- nodecov("wealth"): node-level covariate effect of wealth on tie propensity
+- absdiff("totalties"): similarity by numeric distance on totalties
+
+Coefficient table:
+- edges: estimate=-2.6056, SE=1.2090
+- gwesp.fixed.0.5: estimate=0.0993, SE=0.3070
+- gwdsp.fixed.0.5: estimate=-0.1433, SE=0.3169
+- gwdeg.fixed.0.25: estimate=0.3201, SE=1.3554
+- nodecov.wealth: estimate=0.0085, SE=0.0067
+- absdiff.totalties: estimate=0.0323, SE=0.0224
+
+Fit and diagnostic evidence:
+- BIC: 129.5308
+- AIC: NA
+- GOF max_abs_z: 7.1429
+- GOF pass: false
+- Initial diagnostics: density=0.166666666666667, isolates=1, reciprocity=NA, clustering=0.191489361702128, triangles=3
+
+Refinement evidence:
+- round=2 action=add accepted=NA BIC=129.5308 max_abs_z=7.142857 rationale=Adding gwdegree with a decay of 0.5 addresses potential underfitting as per the GOF diagnostics by capturing the degree distribution of nodes more effectively. | Proposed terms not entirely in admissible library
+- round=3 action=add accepted=NA BIC=129.5308 max_abs_z=7.142857 rationale=The current specification may benefit from capturing higher-order connections through the use of a greater degree decay, which could improve fit and address underfitting indicated by negative z-scores. | Proposed terms not entirely in admissible library
+- round=4 action=add accepted=NA BIC=129.5308 max_abs_z=7.142857 rationale=Adding gwdegree with a decay of 0.5 may help capture the influence of degree distributions better and address the underfitting indicated by the diagnostics. | Proposed terms not entirely in admissible library
+- round=5 action=add accepted=NA BIC=129.5308 max_abs_z=7.142857 rationale=Adding gwdegree can help address underfitting issues indicated by negative z-values, potentially capturing higher-order connectivity patterns in the network. | Proposed terms not entirely in admissible library
+- round=6 action=add accepted=NA BIC=129.5308 max_abs_z=7.142857 rationale=Adding this term can help address the underfitting indicated by the negative z-scores in the diagnostics by capturing additional structural dependency in the network. | Proposed terms not entirely in admissible library
+
+Task:
+Explain the mechanisms represented by this final ERGM. Tie each mechanism to specific terms and, where available, coefficient signs/magnitudes and refinement evidence. Then synthesize those mechanisms into one human-understandable theory of how ties form in this network. Separate supported interpretation from limitations. Do not overclaim causality.
+Output language: English.
+
+Output JSON schema:
+{
+  "headline": "one-sentence mechanism summary",
+  "human_understandable_theory": "plain theory of the network in 1-2 short paragraphs, using everyday language and no ERGM jargon unless briefly defined",
+  "mechanism_explanation": "clear paragraph explaining the main network mechanisms",
+  "term_interpretations": [
+    {"term": "term name", "mechanism": "what it means", "evidence": "coefficient/diagnostic evidence", "caution": "interpretive limit"}
+  ],
+  "evidence_assessment": "how strong the fitted evidence is, including GOF/BIC caveats",
+  "limitations": ["specific limitation 1", "specific limitation 2"],
+  "plain_language": "nontechnical explanation for a domain audience",
+  "recommended_followups": ["diagnostic or modeling follow-up 1", "follow-up 2"]
+}

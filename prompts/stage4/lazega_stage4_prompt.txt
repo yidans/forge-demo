@@ -1,0 +1,64 @@
+SYSTEM PROMPT
+You are Stage 4 of FORGE: an interpretation LLM for fitted ERGMs.
+Your job is to explain social/network mechanisms, not to select terms or improve the model.
+Use cautious language: ERGM coefficients support conditional association mechanisms, not causal proof.
+If GOF does not pass or diagnostics are weak, say so clearly.
+Return valid JSON only.
+
+USER PROMPT
+Dataset: lazega
+Input source: stage3_refinement
+Specification ID: lazega__M2_randomK__01
+Network: name=Lazega Lawyers, nodes=71, directed=true
+Actors: Actors are lawyers in one firm.
+Tie meaning: A tie means A seeks advice from B.
+Context constraint: Office and practice teams coordinate work.
+
+Final ERGM terms:
+- edges
+- nodeifactor("status")
+- absdiff("age")
+- absdiff("yrs_frm")
+- gwesp(decay=0.25, fixed=TRUE)
+
+Term mechanism glossary:
+- edges: baseline tie propensity after accounting for all other terms
+- nodeifactor("status"): receiver-side category effect for status
+- absdiff("age"): similarity by numeric distance on age
+- absdiff("yrs_frm"): similarity by numeric distance on yrs_frm
+- gwesp(decay=0.25, fixed=TRUE): triadic closure and local clustering among connected pairs
+
+Coefficient table:
+- edges: estimate=-0.9148, SE=0.7094
+- nodeifactor.status.partner: estimate=0.5643, SE=0.0694
+- absdiff.age: estimate=-0.0178, SE=0.0044
+- absdiff.yrs_frm: estimate=-0.0193, SE=0.0043
+- gwesp.OTP.fixed.0.25: estimate=0.1833, SE=0.5236
+
+Fit and diagnostic evidence:
+- BIC: 6119.0421
+- AIC: NA
+- GOF max_abs_z: 97.4770
+- GOF pass: false
+- Initial diagnostics: density=0.316700201207243, isolates=0, reciprocity=0.822132796780684, clustering=0.489370345294516, triangles=23463
+
+Refinement evidence:
+- round=5 action=add accepted=TRUE BIC=6119.042 max_abs_z=97.47703 rationale=Adding gwesp can help capture the transitive closure of ties, which may address the overfitting issues indicated by the high z-scores associated with the current model, thereby improving model fit.
+
+Task:
+Explain the mechanisms represented by this final ERGM. Tie each mechanism to specific terms and, where available, coefficient signs/magnitudes and refinement evidence. Then synthesize those mechanisms into one human-understandable theory of how ties form in this network. Separate supported interpretation from limitations. Do not overclaim causality.
+Output language: English.
+
+Output JSON schema:
+{
+  "headline": "one-sentence mechanism summary",
+  "human_understandable_theory": "plain theory of the network in 1-2 short paragraphs, using everyday language and no ERGM jargon unless briefly defined",
+  "mechanism_explanation": "clear paragraph explaining the main network mechanisms",
+  "term_interpretations": [
+    {"term": "term name", "mechanism": "what it means", "evidence": "coefficient/diagnostic evidence", "caution": "interpretive limit"}
+  ],
+  "evidence_assessment": "how strong the fitted evidence is, including GOF/BIC caveats",
+  "limitations": ["specific limitation 1", "specific limitation 2"],
+  "plain_language": "nontechnical explanation for a domain audience",
+  "recommended_followups": ["diagnostic or modeling follow-up 1", "follow-up 2"]
+}

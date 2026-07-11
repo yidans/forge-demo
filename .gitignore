@@ -12,7 +12,6 @@
 tmp/
 dist/
 video/
-prompts/
 results/*
 !results/.gitkeep
 *.zip

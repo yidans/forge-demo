@@ -1,0 +1,72 @@
+SYSTEM PROMPT
+You are Stage 4 of FORGE: an interpretation LLM for fitted ERGMs.
+Your job is to explain social/network mechanisms, not to select terms or improve the model.
+Use cautious language: ERGM coefficients support conditional association mechanisms, not causal proof.
+If GOF does not pass or diagnostics are weak, say so clearly.
+Return valid JSON only.
+
+USER PROMPT
+Dataset: noordin_top
+Input source: stage3_refinement
+Specification ID: noordin_top__M2_randomK__01
+Network: name=Noordin Top Terrorist Network, nodes=79, directed=false
+Actors: Actors are operatives and associates.
+Tie meaning: A tie means association or collaboration.
+Context constraint: Cell structure and shared training increase within-group ties.
+
+Final ERGM terms:
+- edges
+- nodematch("spiritual_ties")
+- nodecov("military")
+- nodematch("school_ties")
+- nodematch("kinship_ties")
+- gwdegree(decay=0.5, fixed=TRUE)
+- gwdegree(decay=0.25, fixed=TRUE)
+
+Term mechanism glossary:
+- edges: baseline tie propensity after accounting for all other terms
+- nodematch("spiritual_ties"): homophily on spiritual_ties: ties are more likely within the same category
+- nodecov("military"): node-level covariate effect of military on tie propensity
+- nodematch("school_ties"): homophily on school_ties: ties are more likely within the same category
+- nodematch("kinship_ties"): homophily on kinship_ties: ties are more likely within the same category
+- gwdegree(decay=0.5, fixed=TRUE): degree heterogeneity and hub tendency in undirected networks
+- gwdegree(decay=0.25, fixed=TRUE): degree heterogeneity and hub tendency in undirected networks
+
+Coefficient table:
+- edges: estimate=-1.6281, SE=0.2173
+- nodematch.spiritual_ties: estimate=-0.9405, SE=0.1459
+- nodecov.military: estimate=0.0648, SE=0.0167
+- nodematch.school_ties: estimate=-0.0338, SE=0.1648
+- nodematch.kinship_ties: estimate=-0.3312, SE=0.1442
+- gwdeg.fixed.0.5: estimate=-9.6782, SE=1.5193
+- gwdeg.fixed.0.25: estimate=9.0726, SE=1.8096
+
+Fit and diagnostic evidence:
+- BIC: 1357.8328
+- AIC: NA
+- GOF max_abs_z: 10.2899
+- GOF pass: false
+- Initial diagnostics: density=0.0649139889646219, isolates=5, reciprocity=NA, clustering=0.26549929010885, triangles=187
+
+Refinement evidence:
+- round=1 action=add accepted=TRUE BIC=1387.879 max_abs_z=21.13617 rationale=Adding this term could help account for additional social ties and may alleviate overfitting by providing a more nuanced representation of relationships in the network.
+- round=2 action=add accepted=TRUE BIC=1372.040 max_abs_z=17.92075 rationale=Adding gwdegree could help to better capture the degree distribution and account for the network's connectivity that may be contributing to overfitting, specifically addressing the patterns related to node connectivity.
+- round=3 action=add accepted=TRUE BIC=1357.833 max_abs_z=10.28992 rationale=Adding this term may help to better capture degree distribution dynamics, potentially addressing the overfitting seen in the current model.
+
+Task:
+Explain the mechanisms represented by this final ERGM. Tie each mechanism to specific terms and, where available, coefficient signs/magnitudes and refinement evidence. Then synthesize those mechanisms into one human-understandable theory of how ties form in this network. Separate supported interpretation from limitations. Do not overclaim causality.
+Output language: English.
+
+Output JSON schema:
+{
+  "headline": "one-sentence mechanism summary",
+  "human_understandable_theory": "plain theory of the network in 1-2 short paragraphs, using everyday language and no ERGM jargon unless briefly defined",
+  "mechanism_explanation": "clear paragraph explaining the main network mechanisms",
+  "term_interpretations": [
+    {"term": "term name", "mechanism": "what it means", "evidence": "coefficient/diagnostic evidence", "caution": "interpretive limit"}
+  ],
+  "evidence_assessment": "how strong the fitted evidence is, including GOF/BIC caveats",
+  "limitations": ["specific limitation 1", "specific limitation 2"],
+  "plain_language": "nontechnical explanation for a domain audience",
+  "recommended_followups": ["diagnostic or modeling follow-up 1", "follow-up 2"]
+}

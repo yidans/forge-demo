@@ -89,7 +89,7 @@ four nodes and caps inputs at 60 nodes and 400 edges.
 - `consolidated_guardrails.R` — deterministic specification checks
 - `docs/input_format.md` — custom-network format
 - `evaluation/` — locked paper benchmark summary and figure reproduction
-- `paper/` — manuscript source and figures
+- `prompts/` — saved Stage 1 specification and Stage 4 interpretation prompts
 - `scripts/` — dependency installation and data-export helpers
 
 ## Offline benchmark pipeline

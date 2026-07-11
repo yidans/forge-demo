@@ -1,0 +1,71 @@
+SYSTEM PROMPT
+You are Stage 4 of FORGE: an interpretation LLM for fitted ERGMs.
+Your job is to explain social/network mechanisms, not to select terms or improve the model.
+Use cautious language: ERGM coefficients support conditional association mechanisms, not causal proof.
+If GOF does not pass or diagnostics are weak, say so clearly.
+Return valid JSON only.
+
+USER PROMPT
+Dataset: glasgow_s50
+Input source: stage3_refinement
+Specification ID: glasgow_s50__M2_randomK__01
+Network: name=Glasgow s50 Teenage Friends, nodes=50, directed=true
+Actors: Actors are pupils in one school.
+Tie meaning: A tie means a friendship nomination (A→B).
+Context constraint: Classes and activities raise closure.
+
+Final ERGM terms:
+- edges
+- nodeifactor("smoking")
+- nodematch("alcohol")
+- gwdsp(decay=0.25, fixed=TRUE)
+- gwesp(decay=0.25, fixed=TRUE)
+- gwesp(decay=0.5, fixed=TRUE)
+
+Term mechanism glossary:
+- edges: baseline tie propensity after accounting for all other terms
+- nodeifactor("smoking"): receiver-side category effect for smoking
+- nodematch("alcohol"): homophily on alcohol: ties are more likely within the same category
+- gwdsp(decay=0.25, fixed=TRUE): shared-partner structure among dyads, including two-path pressure not limited to closed triangles
+- gwesp(decay=0.25, fixed=TRUE): triadic closure and local clustering among connected pairs
+- gwesp(decay=0.5, fixed=TRUE): triadic closure and local clustering among connected pairs
+
+Coefficient table:
+- edges: estimate=-3.3845, SE=0.4758
+- nodeifactor.smoking.2: estimate=-0.2137, SE=0.4949
+- nodeifactor.smoking.3: estimate=-0.0492, SE=0.4558
+- nodeifactor.smoking.4: estimate=-0.1642, SE=0.4613
+- nodeifactor.smoking.5: estimate=0.1511, SE=0.4594
+- nodematch.alcohol: estimate=0.3452, SE=0.1575
+- gwdsp.OTP.fixed.0.25: estimate=-0.3361, SE=0.0597
+- gwesp.OTP.fixed.0.25: estimate=4.5242, SE=1.2218
+- gwesp.OTP.fixed.0.5: estimate=-2.2408, SE=1.1471
+
+Fit and diagnostic evidence:
+- BIC: 785.7493
+- AIC: NA
+- GOF max_abs_z: 8.0122
+- GOF pass: false
+- Initial diagnostics: density=0.0461224489795918, isolates=3, reciprocity=0.971428571428571, clustering=0.387387387387387, triangles=107
+
+Refinement evidence:
+- round=4 action=add accepted=TRUE BIC=790.4822 max_abs_z=8.527774 rationale=Adding gwesp can help improve fit by capturing the tendency for triadic closures which might reduce the overfitting observed with high z-scores.
+- round=8 action=add accepted=TRUE BIC=785.7493 max_abs_z=8.012245 rationale=Adding a higher decay parameter for gwesp may help mitigate overfitting by better capturing the effect of triangle closure in the network.
+
+Task:
+Explain the mechanisms represented by this final ERGM. Tie each mechanism to specific terms and, where available, coefficient signs/magnitudes and refinement evidence. Then synthesize those mechanisms into one human-understandable theory of how ties form in this network. Separate supported interpretation from limitations. Do not overclaim causality.
+Output language: English.
+
+Output JSON schema:
+{
+  "headline": "one-sentence mechanism summary",
+  "human_understandable_theory": "plain theory of the network in 1-2 short paragraphs, using everyday language and no ERGM jargon unless briefly defined",
+  "mechanism_explanation": "clear paragraph explaining the main network mechanisms",
+  "term_interpretations": [
+    {"term": "term name", "mechanism": "what it means", "evidence": "coefficient/diagnostic evidence", "caution": "interpretive limit"}
+  ],
+  "evidence_assessment": "how strong the fitted evidence is, including GOF/BIC caveats",
+  "limitations": ["specific limitation 1", "specific limitation 2"],
+  "plain_language": "nontechnical explanation for a domain audience",
+  "recommended_followups": ["diagnostic or modeling follow-up 1", "follow-up 2"]
+}
