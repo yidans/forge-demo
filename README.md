@@ -1,91 +1,101 @@
 # FORGE
 
-FORGE is an interactive system for guarded LLM-assisted Exponential Random
-Graph Model (ERGM) specification and interpretation. It turns a binary network
-and a short domain description into candidate explanations of tie formation,
-checks those candidates with deterministic rules and statistical fits, permits
-one evidence-checked revision, and produces a model-grounded explanation.
+FORGE is a runnable local system for guarded LLM-assisted Exponential Random
+Graph Model (ERGM) specification and interpretation. Given a binary network
+and a short domain description, it builds a graph-specific menu of valid ERGM
+terms, asks an LLM for structured candidate formulas, screens and fits those
+candidates, permits one checked revision, and produces a non-causal,
+model-grounded explanation.
 
-- Hosted cached interface: https://yidans.github.io/forge-demo/
-- Paper: *FORGE: An LLM-Assisted System for Proposing and Testing
-  Explanations of Network Tie Formation* (EMNLP 2026 System Demonstrations)
+Paper: *FORGE: An LLM-Assisted System for Proposing and Testing Explanations
+of Network Tie Formation* (EMNLP 2026 System Demonstrations).
 
-## Scope of this release
+## What is included
 
-The hosted GitHub Pages interface replays three completed scenario records for
-reliable presentation: school friendship, research collaboration, and
-neighborhood mutual aid. It does not make live LLM calls or fit ERGMs.
+The repository contains the complete local workflow:
 
-The same repository contains the runnable local system:
+1. **Network intake** — validate the network and compute diagnostics.
+2. **Valid-term construction** — build the ERGM terms supported by the graph
+   direction and available attributes.
+3. **LLM proposal** — request JSON candidate formulas using only valid terms.
+4. **Model screening** — apply formula guardrails and rank successful MPLE
+   fits with an MPLE-based pseudo-BIC.
+5. **Checked revision** — request one small edit and keep it only if it passes
+   the checks and improves the recorded diagnostics.
+6. **Interpretation** — generate a term-linked explanation that separates
+   supported associations from limitations and avoids causal claims.
 
-1. Stage 0 loads a network and computes diagnostics.
-2. Stage 1 builds the graph-specific valid term list and requests structured
-   LLM candidate formulas.
-3. Stage 2 screens candidates with fast fits and model checks.
-4. Stage 3 performs full fitting and one guarded refinement.
-5. Stage 4 produces a non-causal, model-grounded interpretation.
+The browser shows the network, prompts, LLM responses, fit results, checks,
+revision decision, and final interpretation as the run proceeds. Three small
+example networks are included, and users may provide a custom network in the
+documented JSON format.
 
-The benchmark loader supports the twelve networks used by the paper:
-`faux_mesa`, `faux_dixon`, `faux_magnolia`, `kapferer`, `lazega`,
-`krackhardt`, `glasgow_s50`, `manufacturing_emails`, `enron_emails`,
-`florentine`, `noordin_top`, and `caltech_36`.
+## Requirements
 
-The paper reports non-null convergence for 10 of 12 networks under fixed
-controls. The locked values used by the aggregate paper figure are recorded in
-`evaluation/paper_benchmark_summary.csv`; they are kept separate from local
-development outputs in `results/`.
+- Python 3.9 or newer
+- R 4.3 or newer with the packages installed by
+  `scripts/install_dependencies.R`
+- An OpenRouter API key for the live LLM stages
 
-## Repository layout
+The API key stays on the local server and is never sent to the browser or
+included in the repository.
 
-- `demo/`: cached browser interface plus the optional local live server.
-- `benchmark_datasets.R`, `stage*.R`: offline Stage 0-4 pipeline.
-- `data/raw/external/`: external source files needed for Caltech and Noordin.
-- `evaluation/`: paper-locked benchmark summary and figure reproduction.
-- `paper/`: current v3 manuscript source and figures.
-- `docs/input_format.md`: custom-network JSON format.
-- `results/`: generated locally and intentionally not committed.
+## Quick start
 
-The site files are also mirrored at repository root so GitHub Pages can serve
-the interface without a separate web build.
-
-## Install
-
-R 4.3 or newer is recommended. Install the required packages with:
+Clone or download this repository, then run the following commands from its
+root directory:
 
 ```bash
 Rscript scripts/install_dependencies.R
+cp .env.example .env
 ```
 
-Copy `.env.example` to `.env` and add an OpenRouter key only if you want live
-LLM calls. `.env` is ignored and must never be committed.
+Open `.env` and set:
 
-## Run the cached interface
-
-From the repository root:
-
-```bash
-python3 -m http.server 8765 --directory demo
+```text
+OPENROUTER_API_KEY=your_key_here
 ```
 
-Open http://127.0.0.1:8765/.
-
-## Run the local live system
+Start the local system:
 
 ```bash
 python3 demo/live/server.py --port 8765
 ```
 
-The live control bar appears after `/api/health` confirms that the local Python
-and R backend is available. GitHub Pages remains cached-only because it is a
-static host.
+Then open <http://127.0.0.1:8765/>. Choose an included example or paste a
+custom network, edit the short domain description, select an LLM, and click
+**Run live pipeline**. A typical small-network run takes roughly 30--60
+seconds, depending on the selected model and local R setup.
 
-The live interface accepts the three included scenarios or a custom binary
-network using the format in `docs/input_format.md`.
+The live interface currently supports:
 
-## Run the offline benchmark pipeline
+- `anthropic/claude-haiku-4.5`
+- `openai/gpt-4o-mini`
+- `google/gemini-2.5-flash`
+- `anthropic/claude-sonnet-4.5`
 
-Run commands from the repository root because the scripts use root-relative
-paths:
+## Custom networks
+
+The accepted JSON format is documented in `docs/input_format.md`. The current
+live interface handles binary directed or undirected networks with at least
+four nodes and caps inputs at 60 nodes and 400 edges.
+
+## Repository layout
+
+- `demo/` — browser client and local live server
+- `demo/live/run_stage.R` — R bridge for diagnostics, term construction, and
+  candidate fitting
+- `benchmark_datasets.R`, `stage*.R` — offline Stage 0--4 experiment pipeline
+- `consolidated_guardrails.R` — deterministic specification checks
+- `docs/input_format.md` — custom-network format
+- `evaluation/` — locked paper benchmark summary and figure reproduction
+- `paper/` — manuscript source and figures
+- `scripts/` — dependency installation and data-export helpers
+
+## Offline benchmark pipeline
+
+The paper evaluation uses the offline pipeline below. Run commands from the
+repository root because the scripts use root-relative paths:
 
 ```bash
 Rscript stage0_load_all_datasets.R
@@ -99,30 +109,26 @@ Rscript stage3_refinement_pipeline.R
 Rscript stage4_interpretation_pipeline.R
 ```
 
-Stages that call an LLM require `OPENROUTER_API_KEY`. Full MCMLE runs can take
-substantial time, especially on the largest networks.
-
-To validate Stage 4 without an external call:
+Stages that call an LLM require `OPENROUTER_API_KEY`. Full MCMLE fits can take
+substantial time on the largest networks. Stage 4 can be checked without an
+external call using:
 
 ```bash
 STAGE4_SKIP_LLM=1 Rscript stage4_interpretation_pipeline.R
 ```
 
-## Reproduce the paper aggregate figure
+Reproduce the aggregate paper figure with:
 
 ```bash
 python3 evaluation/make_baseline_improvement.py
 ```
 
-This command reads the locked CSV and writes
-`evaluation/baseline_improvement.pdf`.
-
 ## Interpretation limits
 
-FORGE compares plausible explanations expressible by its current ERGM term
-list. A selected model is not proof of a causal or uniquely true mechanism.
-Users should inspect convergence, goodness-of-fit, data provenance, and domain
-constraints before drawing substantive conclusions.
+FORGE compares statistical explanations expressible by its current ERGM term
+library. A selected model is not proof of a causal or uniquely correct
+mechanism. Users should inspect convergence, goodness-of-fit, data provenance,
+and domain constraints before drawing substantive conclusions.
 
 ## License
 
