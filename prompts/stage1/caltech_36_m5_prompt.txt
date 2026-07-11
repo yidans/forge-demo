@@ -6,7 +6,7 @@ USER PROMPT:
 • Network: directed = false, bipartite = false, |V| = 769
 • Diagnostics: edges=16656, density=0.056404, degree_quantiles=[  1,  14,  36,  62, 248], isolates=0, reciprocity=NA, clustering=0.291283
 • Admissible library (use these names exactly): edges, gwesp(decay=0.25, fixed=TRUE), gwdsp(decay=0.25, fixed=TRUE), gwesp(decay=0.5, fixed=TRUE), gwdsp(decay=0.5, fixed=TRUE), gwdegree(decay=0.25, fixed=TRUE), gwdegree(decay=0.5, fixed=TRUE), twopath
-• Attribute types: 
+• Attribute types:
 • Dyad covariates for edgecov(): []
 
 **System brief (concise)**

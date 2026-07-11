@@ -62,4 +62,3 @@ Output JSON schema:
   "plain_language": "nontechnical explanation for a domain audience",
   "recommended_followups": ["diagnostic or modeling follow-up 1", "follow-up 2"]
 }
-
