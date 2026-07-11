@@ -1,0 +1,36 @@
+SYSTEM PROMPT:
+You are an expert network scientist for ERGM specification. You have an admissible term library and diagnostics. Produce valid JSON only.
+
+USER PROMPT:
+**Inputs**
+• Network: directed = true, bipartite = false, |V| = 21
+• Diagnostics: edges=190, density=0.452381, degree_quantiles=[ 9, 14, 19, 21, 32], isolates=0, reciprocity=0.523810, clustering=NA
+• Admissible library (use these names exactly): edges, gwesp(decay=0.25, fixed=TRUE), gwdsp(decay=0.25, fixed=TRUE), gwesp(decay=0.5, fixed=TRUE), gwdsp(decay=0.5, fixed=TRUE), mutual, gwidegree(decay=0.25, fixed=TRUE), gwodegree(decay=0.25, fixed=TRUE), gwidegree(decay=0.5, fixed=TRUE), gwodegree(decay=0.5, fixed=TRUE), ttriple, ctriple, nodecov("Age"), nodeicov("Age"), nodeocov("Age"), absdiff("Age"), nodematch("Level"), nodeifactor("Level"), nodeofactor("Level"), nodecov("Tenure"), nodeicov("Tenure"), nodeocov("Tenure"), absdiff("Tenure"), nodecov("x"), nodeicov("x"), nodeocov("x"), absdiff("x"), nodecov("y"), nodeicov("y"), nodeocov("y"), absdiff("y")
+• Attribute types: Age: classification=numeric, unique=16; Department: classification=categorical, unique=5; Level: classification=categorical, unique=3; Tenure: classification=numeric, unique=21; x: classification=numeric, unique=21; y: classification=numeric, unique=21
+• Dyad covariates for edgecov(): []
+
+**System brief (concise)**
+• Actors: Actors are managers.
+• Tie meaning: A tie means advice-seeking relationship.
+• Constraint: Advice-seeking is constrained by age, tenure, level, and department.
+
+**Task**
+- Strategy M4: Return exactly 4 terms. All terms must come from the admissible library.
+
+**Rules**
+- Include edges.
+- Prefer GW families; do not use triangle.
+- Respect directed/undirected constraints and attribute types.
+- Use nodemix only if group-size gate is satisfied.
+- Avoid redundant terms unless diagnostics justify them.
+- Provide expected sign (+/-) for each non-edge term.
+- Do not copy attribute names from the example; use only names listed in the admissible library.
+
+**Output JSON ONLY**
+{
+  "specifications": [{
+    "formula": [ ... ],
+    "expected_effects": { ... },
+    "rationale": { ... }
+  }]
+}

@@ -1,0 +1,36 @@
+SYSTEM PROMPT:
+You are an expert network scientist for ERGM specification. You have an admissible term library and diagnostics. Produce valid JSON only.
+
+USER PROMPT:
+**Inputs**
+• Network: directed = true, bipartite = false, |V| = 71
+• Diagnostics: edges=1574, density=0.316700, degree_quantiles=[14.0, 35.0, 44.0, 52.5, 87.0], isolates=0, reciprocity=0.822133, clustering=NA
+• Admissible library (use these names exactly): edges, gwesp(decay=0.25, fixed=TRUE), gwdsp(decay=0.25, fixed=TRUE), gwesp(decay=0.5, fixed=TRUE), gwdsp(decay=0.5, fixed=TRUE), mutual, gwidegree(decay=0.25, fixed=TRUE), gwodegree(decay=0.25, fixed=TRUE), gwidegree(decay=0.5, fixed=TRUE), gwodegree(decay=0.5, fixed=TRUE), ttriple, ctriple, nodecov("age"), nodeicov("age"), nodeocov("age"), absdiff("age"), nodematch("gender"), nodeifactor("gender"), nodeofactor("gender"), nodemix("gender"), nodematch("office"), nodeifactor("office"), nodeofactor("office"), nodematch("practice"), nodeifactor("practice"), nodeofactor("practice"), nodemix("practice"), nodematch("school"), nodeifactor("school"), nodeofactor("school"), nodemix("school"), nodecov("seniority"), nodeicov("seniority"), nodeocov("seniority"), absdiff("seniority"), nodematch("status"), nodeifactor("status"), nodeofactor("status"), nodemix("status"), nodecov("yrs_frm"), nodeicov("yrs_frm"), nodeocov("yrs_frm"), absdiff("yrs_frm")
+• Attribute types: age: classification=numeric, unique=33; gender: classification=categorical, unique=2; office: classification=categorical, unique=3; practice: classification=categorical, unique=2; school: classification=categorical, unique=3; seniority: classification=numeric, unique=71; status: classification=categorical, unique=2; yrs_frm: classification=numeric, unique=27
+• Dyad covariates for edgecov(): []
+
+**System brief (concise)**
+• Actors: Actors are lawyers.
+• Tie meaning: A tie means advice-seeking relationship.
+• Constraint: Advice-seeking is constrained by practice area, status, gender, office, and seniority.
+
+**Task**
+- Strategy M5: Return exactly 4 terms. All terms must come from the admissible library.
+
+**Rules**
+- Include edges.
+- Prefer GW families; do not use triangle.
+- Respect directed/undirected constraints and attribute types.
+- Use nodemix only if group-size gate is satisfied.
+- Avoid redundant terms unless diagnostics justify them.
+- Provide expected sign (+/-) for each non-edge term.
+- Do not copy attribute names from the example; use only names listed in the admissible library.
+
+**Output JSON ONLY**
+{
+  "specifications": [{
+    "formula": [ ... ],
+    "expected_effects": { ... },
+    "rationale": { ... }
+  }]
+}
