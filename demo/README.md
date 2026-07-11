@@ -1,71 +1,49 @@
-# FORGE EMNLP Demo
+# FORGE Local Live Interface
 
-Browser demo for the FORGE pipeline. It runs in two modes:
+This directory contains the browser client and local server for the runnable
+FORGE workflow. The server performs real LLM calls and invokes R for network
+diagnostics, valid-term construction, formula checks, MPLE fitting,
+pseudo-BIC screening, one checked revision, and final interpretation.
 
-- **Cached mode** (any static host, e.g. GitHub Pages): replays pre-recorded stage
-  records for three illustrative networks — School friendship, Research
-  collaboration, Neighborhood mutual aid.
-- **Live mode** (local server): runs the real pipeline end-to-end on a chosen
-  network — R computes diagnostics and the valid term library, an LLM proposes
-  candidate formulas, R screens them with fast MPLE and a quick GOF simulation,
-  the LLM proposes one checked edit that is kept only if the evidence improves,
-  and the LLM writes the final model-grounded interpretation. A full run takes
-  roughly 30–60 seconds; every Stage Input/Output pane shows the real prompt
-  and response.
+## Run
 
-Live demo (cached mode): https://yidans.github.io/forge-demo/
-
-## Run (cached mode)
-
-Open `index.html` directly in a browser, or serve the folder statically:
+Run from the repository root:
 
 ```bash
-python3 -m http.server 8765 --directory demo
-```
-
-## Run (live mode)
-
-Requirements: `Rscript` on PATH with the `ergm`/`network` packages (same setup
-as the main FORGE pipeline), and `OPENROUTER_API_KEY` in the repo-root `.env`
-or the environment.
-
-```bash
+Rscript scripts/install_dependencies.R
+cp .env.example .env
+# Add OPENROUTER_API_KEY to .env
 python3 demo/live/server.py --port 8765
-# open http://127.0.0.1:8765
 ```
 
-A "Live pipeline run" bar appears under the header (it stays hidden when the
-API is absent, so static deployments are unaffected). Pick a scenario network
-or paste a custom node/edge JSON, edit the three-line system brief, choose a
-model, and hit **Run live pipeline**. Stages light up in the rail as each real
-stage completes; a "▶ Live" network joins the picker so you can compare it
-with the cached walkthroughs.
+Open <http://127.0.0.1:8765/>. Choose one of the three included example
+networks or paste a custom network, edit the short system brief, choose an
+LLM, and click **Run live pipeline**. Each Stage Input/Output panel displays
+the prompt, response, fit evidence, and accept/reject decision produced during
+that run.
 
-Pieces:
+The API key is read by the local server from the environment or repository
+root `.env`; it is not exposed to the browser. The server binds to
+`127.0.0.1` by default.
 
-- `live/server.py` — stdlib-only HTTP server: serves the demo, proxies the LLM
-  calls to OpenRouter (never exposes the key to the browser), and shells out to
-  R for fitting. Binds 127.0.0.1 only.
-- `live/run_stage.R` — sources `consolidated_guardrails.R` and
-  `stage1_candidate_library.R` from the repo root; modes `intake`
-  (diagnostics + valid term library) and `screen` (guardrail check + MPLE fits
-  + pseudo-BIC ranking + GOF for the winner).
-- `live.js` — builds scenario-shaped stage records from the API responses and
-  reuses the cached-mode renderer unchanged.
+## Components
 
-Small-network note: the live library builder relaxes the categorical
-`min_expected_cell` guardrail to 3 (the benchmark default of 5 would exclude
-every attribute on a 12-node demo network); the per-candidate guardrail panel
-still reports the strict check honestly as a warning.
+- `live/server.py` — serves the browser, calls OpenRouter, and invokes R
+- `live/run_stage.R` — computes diagnostics and the valid term library, checks
+  formulas, fits candidates, and returns structured results
+- `live.js` — runs the browser workflow and renders the live stage records
+- `index.html`, `styles.css`, `app.js` — interface layout, styling, and the
+  included example-network definitions
 
-## Demo Flow
+## Live workflow
 
-- Stage 0: selected network and diagnostics
-- Stage 1a: valid ERGM term library
-- Stage 1b: LLM JSON specification proposal
-- Stage 2: MPLE model screening
-- Stage 3: one-edit refinement loop
-- Stage 4: human-understandable interpretation theory
+- Stage 0: network intake and diagnostics
+- Stage 1a: graph-specific valid ERGM term library
+- Stage 1b: structured LLM formula proposals
+- Stage 2: guardrails, MPLE fits, and pseudo-BIC screening
+- Stage 3: one checked model revision
+- Stage 4: model-grounded, non-causal interpretation
 
-Cached mode uses fixed illustrative data so it is reliable for live EMNLP
-presentation; live mode produces real outputs for the same six stages.
+The small-network interface caps custom inputs at 60 nodes and 400 edges. See
+`../docs/input_format.md` for the JSON format. A typical run takes roughly
+30--60 seconds, depending on the LLM and local R setup.
