@@ -2,9 +2,13 @@
 """FORGE live-demo server.
 
 Serves the static demo plus a small pipeline API that runs the real FORGE
-stages on a user-supplied network: R builds the valid term library and fits
-candidates with MPLE; the LLM (via OpenRouter) proposes specifications,
-suggests one checked edit, and writes the final interpretation.
+stages on a user-supplied network: R builds the valid term library, fits
+candidates with stochastic approximation (SA), applies the density check and
+the simulation-based GOF discrepancy q(M), and selects the eligible candidate
+with the lowest q(M); the LLM (via OpenRouter) proposes specifications,
+proposes one edit per revision round (at most four), and writes the final
+interpretation. An edit is kept only if the refitted model is eligible and
+strictly lowers q(M).
 
 Usage:  python3 demo/live/server.py [--port 8765]
 Requires: Rscript on PATH, OPENROUTER_API_KEY in <repo>/.env or the environment.
@@ -33,7 +37,9 @@ ALLOWED_MODELS = [
 ]
 DEFAULT_MODEL = ALLOWED_MODELS[0]
 LLM_TIMEOUT = 120
-R_TIMEOUT = 180
+R_TIMEOUT = 900
+MAX_ROUNDS = 4
+DEFAULT_SEED = 42
 MAX_NODES = 60
 MAX_EDGES = 400
 LIBRARY_OPTIONS = {"min_expected_cell": 3}
@@ -237,54 +243,80 @@ def build_propose_prompt(diag, library_terms, attribute_details, brief, n_candid
     return PROPOSE_SYSTEM, user
 
 
-REVISE_SYSTEM = ("You are Stage 3 of FORGE: a guarded refinement assistant for fitted ERGMs. "
+REVISE_SYSTEM = ("You are Stage 3 of FORGE: a diagnostic-guided refinement assistant for fitted ERGMs. "
                  "You propose exactly one edit to the current model; statistical checks decide "
                  "whether it is kept. Return valid JSON only.")
 
 
-def build_revise_prompt(current, library_terms, brief):
+def format_history(history):
+    if not history:
+        return "- none yet"
+    lines = []
+    for h in history:
+        edit = h.get("edit", {})
+        desc = describe_edit(edit)
+        if h.get("accepted"):
+            lines.append(f"- round {h.get('round')}: {desc} -> ACCEPTED, q(M) {h.get('q_before')} -> {h.get('q_after')}")
+        elif h.get("q_after") is not None:
+            lines.append(f"- round {h.get('round')}: {desc} -> REJECTED, q(M) {h.get('q_after')} did not fall below {h.get('q_before')}")
+        else:
+            lines.append(f"- round {h.get('round')}: {desc} -> REJECTED, {h.get('reason')}")
+    return "\n".join(lines)
+
+
+def describe_edit(edit):
+    action = edit.get("action", "?")
+    if action == "replace":
+        return f"replace {edit.get('target')} with {edit.get('term')}"
+    return f"{action} {edit.get('term')}"
+
+
+def build_revise_prompt(current, library_terms, brief, history, round_no):
     coef_lines = "\n".join(
         f"- {c['term']}: estimate={c['estimate']}, SE={c['std_error']}"
         for c in current.get("coefficients", [])
     )
     gof = current.get("gof") or {}
-    gof_line = ("not computed" if not gof else
-                f"max |z| = {gof.get('max_abs_z')} (worst statistic: {gof.get('worst_stat')}), "
-                f"pass = {gof.get('pass')}")
     details = gof.get("details") or []
-    if details:
-        gof_line += "\n- Largest GOF residuals (positive z = over-produced, negative = under-produced):\n"
-        gof_line += "\n".join(
-            f"  - {d['stat']}/{d['bin']}: z={d['z']:+.2f} ({'overfit' if d['z'] > 0 else 'underfit'})"
-            for d in details if isinstance(d, dict) and d.get("z") is not None
-        )
+    residual_lines = "\n".join(
+        f"  - {d['stat']} / {d['bin']}: observed {d.get('observed')}, simulated mean {d.get('simulated_mean')}, "
+        f"z = {d['z']:+.2f} ({'under-simulated' if d['z'] > 0 else 'over-simulated'})"
+        for d in details if isinstance(d, dict) and d.get("z") is not None
+    ) or "  - none"
     numbered = "\n".join(f"{i + 1}. {t}" for i, t in enumerate(library_terms))
-    user = f"""Current model: {' + '.join(current['terms'])}
+    rejected = [h for h in history if not h.get("accepted")]
+    user = f"""Revision round {round_no} of {MAX_ROUNDS}.
 
-Current evidence:
-- pseudo-BIC: {current.get('pseudo_bic')}
-- coefficient table:
+Current model M_{round_no - 1}: {' + '.join(current['terms'])}
+Current GOF discrepancy q(M_{round_no - 1}) = {current.get('q')}   (largest |z| over the GOF bins; lower is better)
+Largest GOF residuals (positive z = the observed count exceeds the simulated mean):
+{residual_lines}
+Coefficient table (SA estimates):
 {coef_lines}
-- GOF: {gof_line}
+Secondary diagnostic: MPLE pseudo-BIC = {current.get('pseudo_bic')} (not used for acceptance)
 
 **System brief (concise)**
 {format_brief(brief)}
 
-Valid term library (use these names exactly):
+Valid term list L* (use these names exactly):
 {numbered}
 
-GOF guide: a positive z on a statistic means the model over-produces it; a negative z means it is under-produced. Aim to reduce residual misfit without inflating pseudo-BIC.
+Edit history so far:
+{format_history(history)}
+{('Do not repeat any of the ' + str(len(rejected)) + ' rejected edit(s) above.') if rejected else ''}
 
 **Task**
-Propose exactly ONE edit to the current model. The edit will be re-checked by guardrails and refit; it is kept only if the evidence improves.
+Propose exactly ONE edit to the current model: add one term, remove one term, or replace one term with another.
+Tie the reason to the residuals above. The edited model is refitted with SA and re-checked; it is kept only if it
+remains eligible (finite estimates, density check, computable GOF) and its q(M) is strictly lower than the current value.
 
 **Rules**
 - Never remove edges.
 - The edited model must keep 3 to 8 terms.
-- Any added term must be copied character-for-character from the library.
+- Any added term must be copied character-for-character from L*.
 
 **Output JSON ONLY**
-{{"action": "add" | "remove" | "substitute", "term": "<library term>", "target": "<substitute only: existing term to replace>", "rationale": "<one or two sentences>"}}"""
+{{"action": "add" | "remove" | "replace", "term": "<term from L*>", "target": "<replace only: existing term to replace>", "rationale": "<one or two sentences tied to the residuals>"}}"""
     return REVISE_SYSTEM, user
 
 
@@ -353,16 +385,17 @@ Coefficient table:
 {coef_lines}
 
 Fit and diagnostic evidence:
-- pseudo-BIC (MPLE): {final.get('pseudo_bic')}
-- GOF max_abs_z: {gof.get('max_abs_z', 'NA')}
-- GOF pass: {gof.get('pass', 'NA')}
+- Estimator: stochastic approximation (SA)
+- GOF discrepancy q(M) = {gof.get('q', 'NA')} (largest |z| over {gof.get('bins', 'NA')} GOF bins from {gof.get('nsim', 100)} simulated networks; lower is better)
+- Density check: {'passed' if (final.get('density') or {}).get('pass') else 'not recorded'}
+- Secondary diagnostic: MPLE pseudo-BIC = {final.get('pseudo_bic')}
 - Initial diagnostics: density={diag.get('density')}, isolates={diag.get('isolates')}, reciprocity={'NA' if recip is None else recip}, clustering={diag.get('transitivity')}, triangles={diag.get('triangles')}
 
 Refinement evidence:
 {history_lines}
 
 Task:
-Explain the mechanisms represented by this final ERGM. Tie each mechanism to specific terms and, where available, coefficient signs/magnitudes and refinement evidence. Then synthesize those mechanisms into one human-understandable theory of how ties form in this network. Separate supported interpretation from limitations. Do not overclaim causality. Note that estimates come from fast pseudo-likelihood fitting.
+Explain the mechanisms represented by this final ERGM. Tie each mechanism to specific terms and, where available, coefficient signs/magnitudes and refinement evidence. Then synthesize those mechanisms into one human-understandable theory of how ties form in this network. Separate supported interpretation from limitations. Do not overclaim causality. Interpret each coefficient's sign conditional on the other terms in the model.
 The "headline" is shown to a general audience as the one-line summary, so write it in plain everyday words with NO statistical or ERGM jargon: do not use phrases like "triadic closure", "homophily", "baseline tie rate/rarity", "degree heterogeneity", "reciprocity", "conditional association", or term names. Say things people understand, e.g. "friends of friends tend to become friends", "students mostly befriend others in the same club and grade", "a few students have far more friends than the rest".
 Output language: English.
 
@@ -374,7 +407,7 @@ Output JSON schema:
   "term_interpretations": [
     {{"term": "term name", "mechanism": "what it means", "evidence": "coefficient/diagnostic evidence", "caution": "interpretive limit"}}
   ],
-  "evidence_assessment": "how strong the fitted evidence is, including GOF/BIC caveats",
+  "evidence_assessment": "how strong the fitted evidence is, including the q(M) value and remaining GOF discrepancies",
   "limitations": ["specific limitation 1", "specific limitation 2"],
   "plain_language": "nontechnical explanation for a domain audience",
   "recommended_followups": ["diagnostic or modeling follow-up 1", "follow-up 2"]
@@ -453,39 +486,21 @@ def api_propose(payload):
 
 
 def api_screen(payload):
+    """Stage 2: SA fit every candidate plus the edge-only baseline, apply the
+    eligibility checks, and select the eligible model with the lowest q(M)."""
     network = validate_network(payload.get("network"))
     candidates = payload.get("candidates")
     if not isinstance(candidates, list) or not candidates:
         raise ApiError("candidates must be a non-empty array")
     labels = [c.get("label") for c in candidates]
-    if "Edge-only null" not in labels:
-        candidates = [{"label": "Edge-only null", "terms": ["edges"]}] + candidates
-    result = run_r({"mode": "screen", "network": network, "candidates": candidates,
-                    "gof": payload.get("gof", "winner"),
-                    "library_options": LIBRARY_OPTIONS})
+    if "Edge-only baseline" not in labels:
+        candidates = candidates + [{"label": "Edge-only baseline", "terms": ["edges"]}]
+    seed = int(payload.get("seed", DEFAULT_SEED))
+    result = run_r({"mode": "evaluate", "network": network, "candidates": candidates,
+                    "seed": seed, "library_options": LIBRARY_OPTIONS})
+    if not result.get("winner"):
+        raise ApiError("no candidate passed the eligibility checks (finite SA estimates, density check, computable GOF)", 422)
     return result
-
-
-def lexicographic_better(candidate, reference):
-    """Stage-3 acceptance rule: GOF pass beats fail, then lower GOF max|z|, then lower BIC."""
-    cand_gof = candidate.get("gof") or {}
-    ref_gof = reference.get("gof") or {}
-    cand_pass, ref_pass = bool(cand_gof.get("pass")), bool(ref_gof.get("pass"))
-    if cand_pass != ref_pass:
-        return cand_pass
-    cz, rz = cand_gof.get("max_abs_z"), ref_gof.get("max_abs_z")
-    if cz is not None and rz is None:
-        return True
-    if rz is not None and cz is None:
-        return False
-    if cz is not None and rz is not None and abs(cz - rz) > 1e-6:
-        return cz < rz
-    cb, rb = candidate.get("pseudo_bic"), reference.get("pseudo_bic")
-    if cb is None:
-        return False
-    if rb is None:
-        return True
-    return cb < rb
 
 
 def apply_edit(action, term, target, current_terms):
@@ -500,11 +515,11 @@ def apply_edit(action, term, target, current_terms):
         if term not in terms:
             return None, f"term not in model: {term}"
         terms.remove(term)
-    elif action == "substitute":
+    elif action == "replace":
         if not target or target not in terms:
-            return None, f"substitute target not in model: {target}"
+            return None, f"replace target not in model: {target}"
         if target == "edges":
-            return None, "cannot substitute edges"
+            return None, "cannot replace edges"
         if term in terms and term != target:
             return None, f"term already in model: {term}"
         terms[terms.index(target)] = term
@@ -515,17 +530,40 @@ def apply_edit(action, term, target, current_terms):
     return terms, None
 
 
+def current_from_fit(fit, label=None):
+    return {
+        "label": label or fit.get("label"),
+        "terms": fit["terms"],
+        "q": fit.get("q"),
+        "pseudo_bic": fit.get("pseudo_bic"),
+        "coefficients": fit.get("coefficients", []),
+        "gof": fit.get("gof"),
+        "density": fit.get("density"),
+        "guardrails": fit.get("guardrails"),
+    }
+
+
 def api_revise(payload):
+    """Stage 3, one round: the LLM proposes one edit; the edited model is
+    refitted with SA and re-checked; it is kept only if eligible and q(M)
+    strictly decreases. The browser calls this up to MAX_ROUNDS times."""
     model = pick_model(payload)
     network = validate_network(payload.get("network"))
     current = payload["current"]
     library_terms = payload["library_terms"]
     brief = payload.get("brief", {})
+    history = payload.get("history", []) or []
+    round_no = int(payload.get("round", len(history) + 1))
+    if round_no > MAX_ROUNDS:
+        raise ApiError(f"revision budget is {MAX_ROUNDS} rounds")
+    seed = int(payload.get("seed", DEFAULT_SEED))
 
-    system, user = build_revise_prompt(current, library_terms, brief)
+    system, user = build_revise_prompt(current, library_terms, brief, history, round_no)
     parsed, raw, latency = call_llm_json(system, user, model, temperature=0.0)
 
-    action = str(parsed.get("action", "")).strip()
+    action = str(parsed.get("action", "")).strip().lower()
+    if action == "substitute":
+        action = "replace"
     term = str(parsed.get("term", "")).strip()
     target = str(parsed.get("target", "")).strip() or None
     rationale = str(parsed.get("rationale", "")).strip()
@@ -535,67 +573,54 @@ def api_revise(payload):
         "ok": True,
         "model": model,
         "latency": latency,
+        "round": round_no,
+        "max_rounds": MAX_ROUNDS,
         "prompt": {"system": system, "user": user},
         "raw_response": raw,
         "edit": edit,
+        "q_before": current.get("q"),
+        "q_after": None,
+        "eligible": False,
     }
 
-    if action in ("add", "substitute") and term not in library_terms:
-        response.update(accepted=False,
-                        rejection_reason=f"proposed term not in the valid library: {term}",
-                        final=current)
+    def reject(reason):
+        response.update(accepted=False, rejection_reason=reason, final=current)
         return response
 
+    if action in ("add", "replace") and term not in library_terms:
+        return reject(f"proposed term is not in L*: {term}")
     new_terms, err = apply_edit(action, term, target, current["terms"])
     if err:
-        response.update(accepted=False, rejection_reason=err, final=current)
-        return response
+        return reject(err)
 
-    screen = run_r({"mode": "screen", "network": network,
-                    "candidates": [{"label": "Revised", "terms": new_terms}],
-                    "gof": "all", "library_options": LIBRARY_OPTIONS})
-    revised = screen["fits"][0]
+    evaluated = run_r({"mode": "evaluate", "network": network,
+                       "candidates": [{"label": f"Round {round_no}", "terms": new_terms}],
+                       "seed": seed, "library_options": LIBRARY_OPTIONS})
+    revised = evaluated["fits"][0]
     response["refit"] = revised
+    response["eligible"] = bool(revised.get("eligible"))
+    response["q_after"] = revised.get("q")
 
-    if not revised.get("success"):
-        response.update(accepted=False,
-                        rejection_reason=f"refit failed: {revised.get('error', 'unknown')}",
-                        final=current)
-        return response
-    # Re-check the guardrails on the edited model, mirroring stage 3's
-    # validate_candidate_terms. g3 is exempt: the demo library uses
-    # min_expected_cell=3 while check_guardrail_3 hardcodes 5 (see README).
-    # Missing keys count as failures so R error fallbacks cannot slip through.
     guard = revised.get("guardrails") or {}
     required = {
         "g1_edges_and_size": "model must keep edges and 3-8 terms",
         "g2_single_closure_family": "at most one gwesp/gwdsp closure term",
         "g4_no_match_factor_overlap": "nodematch and nodefactor clash on an attribute",
         "g5_no_triangle": "unstable triangle term",
-        "g6_library_only": "edited model leaves the library",
+        "g6_library_only": "edited model leaves L*",
     }
     failed = [reason for key, reason in required.items() if not guard.get(key)]
     if failed:
-        response.update(accepted=False,
-                        rejection_reason=f"guardrail: {failed[0]}",
-                        final=current)
+        return reject(f"incompatible specification: {failed[0]}")
+    if not revised.get("eligible"):
+        return reject(f"ineligible: {revised.get('reason', 'failed the post-fit checks')}")
+    q_before = current.get("q")
+    q_after = revised.get("q")
+    if q_before is not None and q_after is not None and q_after < q_before:
+        response["accepted"] = True
+        response["final"] = current_from_fit(revised, label=f"Revised (round {round_no})")
         return response
-
-    accepted = lexicographic_better(revised, current)
-    response["accepted"] = accepted
-    if accepted:
-        response["final"] = {
-            "label": "Revised",
-            "terms": revised["terms"],
-            "pseudo_bic": revised.get("pseudo_bic"),
-            "coefficients": revised.get("coefficients", []),
-            "gof": revised.get("gof"),
-            "guardrails": revised.get("guardrails"),
-        }
-    else:
-        response["rejection_reason"] = "evidence did not improve (GOF/pseudo-BIC)"
-        response["final"] = current
-    return response
+    return reject(f"q(M) did not decrease ({q_after} vs {q_before})")
 
 
 def strip_markdown(value):

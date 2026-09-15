@@ -297,7 +297,7 @@
 
   function intakeStage(ctx) {
     const d = ctx.intake.diagnostics;
-    const stage = baseStage("intake", "0", "Intake", "Graph checks", "Stage 0", "Network Intake",
+    const stage = baseStage("intake", "0", "Intake", "Network + description", "Stage 0", "Network Intake",
       "Stage 0: diagnostics (live)", "raw network");
     stage.mechanismTitle = "Live run: diagnostics computed from your network";
     stage.mechanismCopy = `FORGE just measured the ${d.nodes}-node network in R: density, closure, and degree spread below are real Stage 0 outputs, not cached values.`;
@@ -311,9 +311,9 @@
     stage.guardrails = [
       [ctx.intake.attribute_details.every((a) => a.missing === 0) ? "pass" : "warn", "No missing node attributes in the network"],
       [d.isolates === 0 ? "pass" : "warn", `Isolates: ${d.isolates}`],
-      [d.nodes <= (serverInfo ? serverInfo.max_nodes : 60) ? "pass" : "warn", "Small enough for live MPLE fitting"]
+      [d.nodes <= (serverInfo ? serverInfo.max_nodes : 60) ? "pass" : "warn", "Small enough for live SA fitting and simulation"]
     ];
-    stage.chartLabel = "awaiting fit";
+    stage.chartLabel = "nothing fitted yet";
     stage.prompt = [
       `live run — Stage 0 (R, demo/live/run_stage.R)`,
       `network: ${d.nodes} nodes / ${d.edges} ${d.directed ? "directed" : "undirected"} ties`,
@@ -334,7 +334,7 @@
     const attrTermCount = lib.terms.length - lib.base_terms.length;
     const coveredAttrs = new Set(lib.terms.map((t) => (t.match(/\("([^"]+)"\)/) || [])[1]).filter(Boolean));
     const excluded = ctx.intake.attribute_details.filter((a) => !coveredAttrs.has(a.attribute));
-    const stage = baseStage("library", "1", "Library", "Valid terms", "Stage 1a", "Build a Valid Term Library",
+    const stage = baseStage("library", "1a", "Valid terms", "Build L*", "Stage 1a", "Build the Valid Term List L*",
       "Stage 1a: library (live)", "candidate mechanisms");
     stage.mechanismTitle = "The guardrails just built the menu for this network";
     stage.mechanismCopy = `build_admissible_library() returned ${lib.terms.length} terms valid for this ${lib.directed ? "directed" : "undirected"} network. ${excluded.length ? `Excluded attribute${excluded.length > 1 ? "s" : ""}: ${excluded.map((a) => a.attribute).join(", ")} (too few observations per level).` : "All attributes qualified."}`;
@@ -350,7 +350,7 @@
       [excluded.length === 0 ? "pass" : "warn", excluded.length === 0 ? "All categorical terms have enough observations per level" : `Small-sample gate excluded: ${excluded.map((a) => a.attribute).join(", ")}`],
       ["pass", "Triangle is excluded; curved closure terms are preferred"]
     ];
-    stage.chartLabel = "awaiting fit";
+    stage.chartLabel = "nothing fitted yet";
     stage.prompt = [
       `live run — Stage 1a (R)`,
       `input: ${lib.directed ? "directed" : "undirected"} network, ${ctx.intake.diagnostics.nodes} nodes`,
@@ -371,7 +371,7 @@
     const specs = ctx.propose.specifications;
     const compliant = specs.filter((s) => s.library_compliant);
     const first = compliant[0] || specs[0];
-    const stage = baseStage("spec", "1b", "Formula", "LLM proposal", "Stage 1b", "Generate LLM Specifications",
+    const stage = baseStage("spec", "1b", "Propose", "LLM formulas", "Stage 1b", "LLM Proposes Formulas from L*",
       "Stage 1b: LLM proposals (live)", "LLM-selected terms");
     stage.mechanismTitle = `${shortModel(ctx.propose.model)} proposed ${specs.length} candidate formulas`;
     stage.mechanismCopy = `The prompt and JSON on this screen are the real request and response (${ctx.propose.latency}s). ${compliant.length}/${specs.length} candidates use only library terms; off-menu terms would be flagged and dropped here.`;
@@ -387,7 +387,7 @@
       [specs.every((s) => s.formula.includes("edges")) ? "pass" : "warn", "Every specification includes edges"],
       [specs.every((s) => s.formula.length >= 3 && s.formula.length <= 8) ? "pass" : "warn", "Term counts stay within the guardrail (3-8)"]
     ];
-    stage.chartLabel = "screening next";
+    stage.chartLabel = "3 candidates await fitting";
     stage.prompt = `system:\n${ctx.propose.prompt.system}\n\nuser:\n${ctx.propose.prompt.user}`;
     stage.output = JSON.stringify({
       specifications: specs.map((s) => ({
@@ -398,126 +398,212 @@
     }, null, 2);
     stage.outputBadge = "llm json";
     stage.highlight = "closure";
-    stage.theory = `The LLM's proposals are stories about ${ctx.demo.tieKind}: ${first.formula.filter((t) => t !== "edges").map((t) => glossFor(t)).join(", ")}. Stage 2 decides which story the data supports.`;
+    stage.theory = `The LLM's proposals are stories about ${ctx.demo.tieKind}: ${first.formula.filter((t) => t !== "edges").map((t) => glossFor(t)).join(", ")}. Stage 2 fits them and decides which story the data supports.`;
     return stage;
+  }
+
+  function joinTerms(terms) {
+    return terms.map((t) => (typeof shortTerm === "function" ? shortTerm(t) : t)).join(" + ");
+  }
+
+  function residualText(d) {
+    if (!d) return null;
+    const label = d.stat === "espartners" ? `shared partners = ${String(d.bin).replace(/^esp/, "")}`
+      : d.stat === "distance" ? `geodesic distance = ${d.bin}`
+      : `${d.stat} = ${String(d.bin).replace(/^i?o?degree/, "")}`;
+    return `${label}: observed ${d.observed}, simulated mean ${d.simulated_mean}, z = ${d.z >= 0 ? "+" : ""}${Number(d.z).toFixed(2)}`;
+  }
+
+  function st(term) {
+    return typeof shortTerm === "function" ? shortTerm(term) : term;
+  }
+
+  function editLabel(edit) {
+    if (!edit) return "";
+    if (edit.action === "replace") return `replace ${st(edit.target)} with ${st(edit.term)}`;
+    return `${edit.action} ${st(edit.term)}`;
+  }
+
+  function editShort(edit) {
+    if (!edit) return "";
+    if (edit.action === "replace") return `${st(edit.target)}→${st(edit.term)}`;
+    return `${edit.action === "add" ? "+" : "−"}${st(edit.term)}`;
   }
 
   function fitStage(ctx) {
     const fits = ctx.screen.fits;
     const winner = fits.find((f) => f.label === ctx.screen.winner);
-    if (!winner) throw new Error("screening returned no usable winner for this network");
-    const nullFit = fits.find((f) => f.label === "Edge-only null");
-    const beatsNull = !nullFit || winner.pseudo_bic < nullFit.pseudo_bic;
-    const stage = baseStage("fit", "2", "Screen", "Fast fit", "Stage 2", "Fit Candidate Specifications",
-      "Stage 2: model screen (live)", "best pseudo-BIC");
-    stage.mechanismTitle = `MPLE screening picked ${winner.label} in ${fits.reduce((s, f) => s + (f.runtime || 0), 0).toFixed(1)}s`;
-    stage.mechanismCopy = `Every candidate was just fitted to your network with fast maximum pseudo-likelihood in R. Lower pseudo-BIC wins; the winner also gets a quick goodness-of-fit simulation.`;
+    if (!winner) throw new Error("no candidate passed the eligibility checks");
+    const eligible = fits.filter((f) => f.eligible);
+    const fitted = fits.filter((f) => f.success);
+    const densityPass = fits.filter((f) => f.density && f.density.pass).length;
+    const stage = baseStage("fit", "2", "Fit & select", "SA fit + GOF", "Stage 2", "Fit Candidates and Select by GOF",
+      "Stage 2: SA fit and selection (live)", "lowest q(M)");
+    const worst = winner.gof && winner.gof.details ? winner.gof.details[0] : null;
+    stage.mechanismTitle = `${winner.label} wins with the smallest GOF discrepancy`;
+    stage.mechanismCopy = `Every candidate was just fitted with stochastic approximation in R (${fits.reduce((s, f) => s + (f.runtime || 0), 0).toFixed(0)}s). ${eligible.length}/${fits.length} passed the eligibility checks; ${winner.label} has the lowest q(M) = ${winner.q}.${worst ? ` Its largest remaining mismatch: ${residualText(worst)}.` : ""}`;
     stage.metrics = [
-      [String(winner.pseudo_bic), "best pseudo-BIC"],
-      [String(nullFit ? nullFit.pseudo_bic : "–"), "null pseudo-BIC"],
-      [winner.gof ? String(winner.gof.max_abs_z) : "–", "GOF max |z|"],
-      [winner.label, "winner"]
+      [String(winner.q), "lowest q(M)"],
+      [`${eligible.length}/${fits.length}`, "eligible candidates"],
+      [winner.label.replace("Candidate ", "C").replace("Edge-only baseline", "Edge-only"), "selected M0"],
+      [winner.pseudo_bic == null ? "–" : String(winner.pseudo_bic), "PBIC (secondary)"]
     ];
     stage.terms = winner.terms;
-    stage.guardrails = guardrailRowsFromReport(winner.guardrails, [
-      [fits.every((f) => f.success) ? "pass" : "warn", `MPLE succeeded for ${fits.filter((f) => f.success).length}/${fits.length} specifications`],
-      [beatsNull ? "pass" : "warn", "Best pseudo-BIC improves over the edge-only null"],
-      [winner.gof && winner.gof.pass ? "pass" : "warn", winner.gof ? `GOF max |z| = ${winner.gof.max_abs_z} (${winner.gof.pass ? "pass" : "check"})` : "GOF not computed"]
+    stage.guardrails = [
+      [fitted.length === fits.length ? "pass" : "warn", `SA returned finite coefficients for ${fits.filter((f) => f.finite).length}/${fits.length} candidates`],
+      [densityPass === fitted.length ? "pass" : "warn", `Density check passed for ${densityPass}/${fitted.length} fitted candidates (≤25% error, 30 simulations)`],
+      ["pass", `GOF computed from 100 simulations for ${eligible.length} eligible candidates`],
+      ["pass", `Selected ${winner.label}: lowest q(M) = ${winner.q}`]
+    ];
+    stage.chartTitle = "GOF discrepancy q(M) · lower is better";
+    stage.chartLabel = `${winner.label} selected`;
+    stage.bic = fits.map((f) => [
+      f.label.replace("Edge-only baseline", "Edge-only"),
+      f.eligible ? f.q : null,
+      !f.eligible ? "ineligible" : f.label === winner.label ? "selected" : "eligible"
     ]);
-    stage.chartLabel = `${winner.label} winner`;
-    stage.bic = fits.filter((f) => f.success).map((f) => [f.label === "Edge-only null" ? "Null" : f.label, f.pseudo_bic]);
     stage.prompt = [
-      `candidate catalog:`,
-      ...fits.map((f) => `${f.label} = ${f.terms.join(" + ")}`),
+      `Stage 2 — statistical fitting and selection (R backend, no LLM call)`,
       ``,
-      `task:`,
-      `fit each with MPLE in R and rank by pseudo-BIC.`
+      `candidate pool:`,
+      ...fits.map((f) => `  ${f.label} = ${joinTerms(f.terms)}`),
+      ``,
+      `procedure:`,
+      `  1. fit each candidate with stochastic approximation (SA)`,
+      `  2. eligibility: finite coefficients, successful simulation,`,
+      `     density check (30 simulated networks, |relative error| <= 25%),`,
+      `     computable GOF diagnostics`,
+      `  3. GOF from 100 simulated networks (seed ${ctx.screen.seed} for every candidate):`,
+      `     ${ctx.intake.diagnostics.directed ? "in-degree, out-degree" : "degree"}, edgewise shared partners, geodesic distance`,
+      `     z_k = (obs_k - mean_sim_k) / sd_sim_k;   q(M) = max_k |z_k|`,
+      `  4. select M0 = argmin q(M) over eligible candidates`,
+      `     (MPLE pseudo-BIC is recorded as a secondary diagnostic only)`
     ].join("\n");
     stage.output = JSON.stringify(fits.map((f) => ({
-      spec: f.label,
-      pseudo_bic: f.pseudo_bic ?? null,
-      wald_max: f.wald_max ?? null,
-      gof_max_abs_z: f.gof ? f.gof.max_abs_z : null,
-      success: f.success
+      candidate: f.label,
+      formula: joinTerms(f.terms),
+      eligible: Boolean(f.eligible),
+      density_rel_error: f.density ? f.density.rel_error : null,
+      q: f.eligible ? f.q : null,
+      largest_residual: f.gof && f.gof.details ? residualText(f.gof.details[0]) : null,
+      pbic_secondary: f.pseudo_bic ?? null,
+      decision: f.label === winner.label ? "selected: lowest q(M) among eligible" : (f.eligible ? "eligible" : `ineligible: ${f.reason}`)
     })), null, 2);
-    stage.outputBadge = "fit table";
+    stage.outputBadge = "fit + GOF table";
     stage.highlight = "winner";
-    stage.theory = beatsNull
-      ? `The evidence favors ${winner.label}: ${winner.terms.filter((t) => t !== "edges").map((t) => glossFor(t)).join(", ")} explain more than the edge-only baseline (pseudo-BIC ${winner.pseudo_bic} vs ${nullFit ? nullFit.pseudo_bic : "–"}).`
-      : `On this network no proposal beat the edge-only baseline (best ${winner.label} pseudo-BIC ${winner.pseudo_bic} vs null ${nullFit.pseudo_bic}). The guarded screen reports that honestly; ${winner.label} moves forward only as the best available proposal.`;
+    const baseline = fits.find((f) => f.label === "Edge-only baseline");
+    stage.theory = `The evidence favors ${winner.label}: ${winner.terms.filter((t) => t !== "edges").map((t) => glossFor(t)).join(", ") || "the baseline tie rate alone"} reproduce${winner.terms.length > 2 ? "" : "s"} the observed network best (q(M) ${winner.q}${baseline && baseline.eligible && baseline.label !== winner.label ? ` vs ${baseline.q} for the edge-only baseline` : ""}).`;
     return stage;
   }
 
-  function refineStage(ctx) {
-    const revise = ctx.revise;
-    const edit = revise.edit;
-    const refit = revise.refit;
-    const accepted = revise.accepted;
+  function roundRecord(r) {
+    return {
+      round: r.round,
+      edit: editLabel(r.edit),
+      accepted: Boolean(r.accepted),
+      eligible: Boolean(r.eligible),
+      qBefore: r.q_before,
+      qAfter: r.eligible ? r.q_after : null,
+      reason: r.accepted ? "eligible, q(M) decreased" : (r.rejection_reason || "rejected")
+    };
+  }
+
+  function refineStage(ctx, inProgress) {
+    const rounds = ctx.rounds;
+    const accepted = rounds.filter((r) => r.accepted);
+    const m0 = ctx.m0;
     const current = ctx.current;
-    const stage = baseStage("refine", "3", "Revise", "Checked edit", "Stage 3", "LLM-Guided Refinement",
-      "Stage 3: refinement (live)", accepted ? "accepted edit" : "rejected edit");
-    stage.mechanismTitle = accepted
-      ? `Edit accepted: ${edit.action} ${edit.term}`
-      : `Edit rejected: the checks kept the Stage 2 winner`;
-    stage.mechanismCopy = accepted
-      ? `The LLM proposed one edit, the guardrails validated it, and the refit improved the evidence — so the edit was kept.`
-      : `The LLM proposed “${edit.action} ${edit.term}”, but ${revise.rejection_reason}. FORGE keeps the model the evidence supports — this rejection is the guarded loop working, not a failure.`;
+    const last = rounds[rounds.length - 1];
+    const stage = baseStage("refine", "3", "Revise", "≤4 checked rounds", "Stage 3", "Diagnostic-Guided Revision",
+      inProgress ? `Stage 3: round ${rounds.length + 1} of 4 (live)` : "Stage 3: checked revision (live)",
+      accepted.length ? "accepted edits" : "no accepted edit");
+    const reduction = m0.q ? (100 * (m0.q - current.q) / m0.q) : 0;
+    stage.mechanismTitle = inProgress
+      ? `Round ${rounds.length} of 4 done: ${last && last.accepted ? "edit kept" : "edit rejected"}`
+      : (accepted.length
+        ? `${accepted.length} of ${rounds.length} proposed edits lowered q(M) and were kept`
+        : `${rounds.length} edits proposed, none lowered q(M): Stage 2 model retained`);
+    stage.mechanismCopy = rounds.map((r) => `Round ${r.round}: ${editLabel(r.edit)} → ${r.accepted ? `accepted (q(M) ${r.q_before} → ${r.q_after})` : `rejected (${r.rejection_reason})`}.`).join(" ")
+      + (inProgress ? " The next round is being proposed and refitted…" : "");
     stage.metrics = [
-      [edit.action, "proposed edit"],
-      [refit && refit.pseudo_bic != null ? String(refit.pseudo_bic) : "–", "edited pseudo-BIC"],
-      [accepted ? "yes" : "no", "accepted"],
-      [revise.final.gof ? String(revise.final.gof.max_abs_z) : (current.gof ? String(current.gof.max_abs_z) : "–"), "final GOF max |z|"]
+      [String(current.q), inProgress ? "current q(M)" : "final q(M)"],
+      [`${accepted.length}/${rounds.length}`, "accepted / rounds"],
+      [`${reduction.toFixed(1)}%`, "q(M) reduction"],
+      [String(current.terms.length), "terms in model"]
     ];
-    stage.terms = revise.final.terms;
-    stage.guardrails = guardrailRowsFromReport(refit ? refit.guardrails : null, [
-      [edit.term && ctx.libraryTerms.includes(edit.term) ? "pass" : "warn", "Proposed edit uses a valid library term"],
-      [accepted ? "pass" : "warn", accepted ? "Evidence improved, edit kept" : "Evidence did not improve, edit reverted"]
-    ]);
-    stage.chartLabel = accepted ? "revised" : "edit rejected";
+    stage.terms = current.terms;
+    stage.rounds = rounds.map(roundRecord);
+    stage.guardrails = [
+      ["pass", "Each round proposes exactly one add / remove / replace"],
+      [rounds.every((r) => r.eligible || !r.refit) ? "pass" : "warn", `${rounds.filter((r) => r.eligible).length}/${rounds.length} revised models passed the eligibility checks`],
+      ["pass", "Rejected edits are fed back and excluded from later rounds"],
+      ["pass", `Kept ${accepted.length} edit${accepted.length === 1 ? "" : "s"}: q(M_T) = ${current.q} ≤ q(M_0) = ${m0.q}`]
+    ];
+    stage.chartTitle = "GOF discrepancy q(M) · lower is better";
+    stage.chartLabel = `${accepted.length}/${rounds.length} accepted`;
     stage.bic = [
-      [current.label, current.pseudo_bic],
-      ...(refit && refit.pseudo_bic != null ? [["After edit", refit.pseudo_bic]] : [])
+      ["M0 (Stage 2)", m0.q, "selected"],
+      ...rounds.map((r) => [`R${r.round} ${editShort(r.edit)}`, r.eligible ? r.q_after : null, r.accepted ? "accepted" : (r.eligible ? "rejected" : "ineligible")])
     ];
-    stage.prompt = `system:\n${revise.prompt.system}\n\nuser:\n${revise.prompt.user}`;
+    stage.prompt = last ? `system:\n${last.prompt.system}\n\nuser:\n${last.prompt.user}` : "";
     stage.output = JSON.stringify({
-      edit,
-      accepted,
-      rejection_reason: revise.rejection_reason || null,
-      refit: refit ? { pseudo_bic: refit.pseudo_bic, gof: refit.gof || null } : null
+      M0: joinTerms(m0.terms),
+      q_M0: m0.q,
+      rounds: rounds.map((r) => ({
+        round: r.round,
+        action: r.edit.action,
+        ...(r.edit.target ? { target: r.edit.target } : {}),
+        term: r.edit.term,
+        rationale: r.edit.rationale,
+        eligible: Boolean(r.eligible),
+        q_before: r.q_before,
+        q_after: r.eligible ? r.q_after : null,
+        accepted: Boolean(r.accepted),
+        decision: r.accepted ? `accepted: eligible and q(M) fell ${r.q_before} → ${r.q_after}` : `rejected: ${r.rejection_reason}`
+      })),
+      final: { formula: joinTerms(current.terms), q: current.q, pbic_secondary: current.pseudo_bic ?? null }
     }, null, 2);
-    stage.outputBadge = "edit record";
+    stage.outputBadge = "revision record";
     stage.highlight = "refined";
-    stage.theory = accepted
-      ? `The refined model adds ${glossFor(edit.term)}. One auditable edit, validated and kept because the evidence improved.`
-      : `The proposal to ${edit.action} ${edit.term} was tested and reverted: ${revise.rejection_reason}. The final model stays exactly what the data supported at Stage 2.`;
+    stage.theory = accepted.length
+      ? `${accepted.length} edit${accepted.length === 1 ? "" : "s"} survived the checks: ${accepted.map((r) => glossFor(r.edit.term)).join("; ")}. q(M) fell from ${m0.q} to ${current.q}.`
+      : `No proposed edit lowered q(M), so the Stage 2 model stays the final specification (q(M) = ${m0.q}).`;
     return stage;
   }
 
   function interpretStage(ctx) {
     const interp = ctx.interpret.interpretation;
-    const final = ctx.revise.final;
+    const final = ctx.current;
+    const m0 = ctx.m0;
+    const baseline = ctx.screen.fits.find((f) => f.label === "Edge-only baseline");
     const attrCount = new Set(final.terms.map((t) => (t.match(/\("([^"]+)"\)/) || [])[1]).filter(Boolean)).size;
     const tis = Array.isArray(interp.term_interpretations) ? interp.term_interpretations : [];
     const claimsMatch = tis.length > 0 && tis.every((ti) => ti && typeof ti.term === "string" &&
       final.terms.some((t) => t === ti.term || t.startsWith(ti.term.split("(")[0])));
-    const stage = baseStage("interpret", "4", "Interpret", "Final summary", "Stage 4", "Final Interpretation",
+    const stage = baseStage("interpret", "4", "Interpret", "Term-linked summary", "Stage 4", "Plain-Language Explanation",
       "Stage 4: interpretation (live)", "final interpretation");
-    stage.mechanismTitle = "What the model supports";
+    stage.mechanismTitle = "What the fitted model supports";
     stage.mechanismCopy = interp.mechanism_explanation;
     stage.metrics = [
       [String(final.terms.length), "terms"],
       [String(attrCount), "attributes"],
-      [String((interp.limitations || []).length), "caveats"],
+      [String((interp.limitations || []).length), "limitations"],
       ["0", "causal claims"]
     ];
     stage.terms = final.terms;
+    stage.rounds = ctx.rounds.map(roundRecord);
     stage.guardrails = [
-      [claimsMatch ? "pass" : "warn", "Claims match fitted terms"],
-      [(interp.limitations || []).length > 0 ? "pass" : "warn", "Caveats kept separate"],
+      [claimsMatch ? "pass" : "warn", "Every claim maps to a fitted term and its sign"],
+      [(interp.limitations || []).length > 0 ? "pass" : "warn", "Limitations kept separate from findings"],
       ["pass", "Conditional associations, no causal claims"]
     ];
+    stage.chartTitle = "GOF discrepancy q(M) · lower is better";
     stage.chartLabel = "final";
-    stage.bic = ctx.finalBicRows;
+    stage.bic = [
+      ...(baseline ? [["Edge-only", baseline.eligible ? baseline.q : null, baseline.eligible ? "eligible" : "ineligible"]] : []),
+      [`${m0.label} (M0)`, m0.q, "eligible"],
+      ["Final (M_T)", final.q, "selected"]
+    ];
     stage.prompt = `system:\n${ctx.interpret.prompt.system}\n\nuser:\n${ctx.interpret.prompt.user}`;
     stage.output = JSON.stringify(interp, null, 2);
     stage.outputBadge = "interpretation json";
@@ -573,52 +659,60 @@
       demo.stages.push(specStage(ctx));
       showLatestStage();
 
-      setLiveStatus("Stage 2: MPLE screening in R…", "running");
+      setLiveStatus("Stage 2: SA fitting, density check and 100-simulation GOF in R (about a minute)…", "running");
       const candidates = ctx.propose.specifications
         .filter((s) => s.library_compliant)
         .map((s) => ({ label: s.label, terms: s.formula }));
-      ctx.screen = await postJSON(API.screen, { network: payload, candidates, gof: "winner" });
+      ctx.screen = await postJSON(API.screen, { network: payload, candidates });
       demo.stages.push(fitStage(ctx));
       showLatestStage();
 
       const winner = ctx.screen.fits.find((f) => f.label === ctx.screen.winner);
-      ctx.current = {
+      ctx.m0 = {
         label: winner.label,
         terms: winner.terms,
+        q: winner.q,
         pseudo_bic: winner.pseudo_bic,
         coefficients: winner.coefficients,
-        gof: winner.gof || null
+        gof: winner.gof || null,
+        density: winner.density || null
       };
-      setLiveStatus(`Stage 3: ${shortModel(model)} proposing one checked edit…`, "running");
-      ctx.revise = await postJSON(API.revise, {
-        network: payload,
-        current: ctx.current,
-        library_terms: ctx.libraryTerms,
-        brief,
-        model
-      });
-      registerGlosses(ctx.revise.final.terms);
-      demo.stages.push(refineStage(ctx));
-      showLatestStage();
+      ctx.current = { ...ctx.m0 };
+      ctx.rounds = [];
+      const maxRounds = 4;
+      for (let round = 1; round <= maxRounds; round += 1) {
+        setLiveStatus(`Stage 3, round ${round} of ${maxRounds}: ${shortModel(model)} proposes one edit, R refits and re-checks it…`, "running");
+        const revise = await postJSON(API.revise, {
+          network: payload,
+          current: ctx.current,
+          library_terms: ctx.libraryTerms,
+          brief,
+          model,
+          round,
+          seed: ctx.screen.seed,
+          history: ctx.rounds.map((r) => ({
+            round: r.round, edit: r.edit, accepted: r.accepted,
+            q_before: r.q_before, q_after: r.q_after, reason: r.rejection_reason || null
+          }))
+        });
+        registerGlosses([revise.edit.term].filter(Boolean));
+        ctx.rounds.push(revise);
+        if (revise.accepted) ctx.current = revise.final;
+        const refineIndex = demo.stages.findIndex((s) => s.id === "refine");
+        const refined = refineStage(ctx, round < maxRounds);
+        if (refineIndex >= 0) demo.stages[refineIndex] = refined; else demo.stages.push(refined);
+        showLatestStage();
+      }
 
-      const nullFit = ctx.screen.fits.find((f) => f.label === "Edge-only null");
-      ctx.finalBicRows = [
-        ...(nullFit ? [["Edge-only null", nullFit.pseudo_bic]] : []),
-        ["LLM proposal", ctx.current.pseudo_bic],
-        ...(ctx.revise.accepted ? [["After revision", ctx.revise.final.pseudo_bic]] : [])
-      ];
-      const edit = ctx.revise.edit;
-      const refitBic = ctx.revise.refit ? ctx.revise.refit.pseudo_bic : "NA";
-      const refitZ = ctx.revise.refit && ctx.revise.refit.gof ? ctx.revise.refit.gof.max_abs_z : "NA";
-      const history = [
-        `round=1 action=${edit.action} term=${edit.term} accepted=${ctx.revise.accepted ? "TRUE" : "FALSE"} pseudo_bic=${refitBic} max_abs_z=${refitZ} rationale=${edit.rationale}${ctx.revise.accepted ? "" : ` | ${ctx.revise.rejection_reason}`}`
-      ];
+      const history = ctx.rounds.map((r) =>
+        `round=${r.round} edit=${editLabel(r.edit)} accepted=${r.accepted ? "TRUE" : "FALSE"} q_before=${r.q_before} q_after=${r.q_after ?? "NA"} rationale=${r.edit.rationale}${r.accepted ? "" : ` | ${r.rejection_reason}`}`
+      );
       setLiveStatus(`Stage 4: ${shortModel(model)} writing the interpretation…`, "running");
       ctx.interpret = await postJSON(API.interpret, {
         brief,
         network_meta: { id: sourceId === "custom" ? "custom_network" : sourceId, title: demo.title },
         diagnostics: ctx.intake.diagnostics,
-        final: ctx.revise.final,
+        final: ctx.current,
         history,
         model
       });

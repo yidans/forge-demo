@@ -24,3 +24,6 @@ results/*
 **/*.out
 **/main.log
 **/check_*.log
+
+# Python bytecode
+__pycache__/

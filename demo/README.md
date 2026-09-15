@@ -2,8 +2,15 @@
 
 This directory contains the browser client and local server for the runnable
 FORGE workflow. The server performs real LLM calls and invokes R for network
-diagnostics, valid-term construction, formula checks, MPLE fitting,
-pseudo-BIC screening, one checked revision, and final interpretation.
+diagnostics, valid-term construction, formula checks, stochastic-approximation
+(SA) fitting, the density check and simulation-based GOF discrepancy q(M),
+up to four rounds of checked revision, and final interpretation.
+
+Without the local server (for example on GitHub Pages) the same interface
+shows a static walkthrough of the three example networks. The Stage 2--4
+numbers in that walkthrough come from an actual run of the SA / GOF / revision
+procedure on each example network (see `app.js`, `runRecords`); the LLM
+prompts and rationales there are illustrative text.
 
 ## Run
 
@@ -30,7 +37,8 @@ root `.env`; it is not exposed to the browser. The server binds to
 
 - `live/server.py` — serves the browser, calls OpenRouter, and invokes R
 - `live/run_stage.R` — computes diagnostics and the valid term library, checks
-  formulas, fits candidates, and returns structured results
+  formulas, fits candidates with SA, runs the density check and 100-simulation
+  GOF, and returns q(M), coefficients, and the largest residuals
 - `live.js` — runs the browser workflow and renders the live stage records
 - `index.html`, `styles.css`, `app.js` — interface layout, styling, and the
   included example-network definitions
@@ -40,10 +48,14 @@ root `.env`; it is not exposed to the browser. The server binds to
 - Stage 0: network intake and diagnostics
 - Stage 1a: graph-specific valid ERGM term library
 - Stage 1b: structured LLM formula proposals
-- Stage 2: guardrails, MPLE fits, and pseudo-BIC screening
-- Stage 3: one checked model revision
+- Stage 2: guardrails, SA fits, eligibility checks (finite estimates,
+  simulation, density check, computable GOF), selection by lowest q(M);
+  MPLE pseudo-BIC recorded as a secondary diagnostic
+- Stage 3: up to four revision rounds, one add / remove / replace per round,
+  kept only if the refitted model is eligible and q(M) strictly decreases
 - Stage 4: model-grounded, non-causal interpretation
 
 The small-network interface caps custom inputs at 60 nodes and 400 edges. See
-`../docs/input_format.md` for the JSON format. A typical run takes roughly
-30--60 seconds, depending on the LLM and local R setup.
+`../docs/input_format.md` for the JSON format. A typical run takes roughly one to
+three minutes, most of it in SA fitting and network simulation, depending on
+the LLM and local R setup.

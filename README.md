@@ -3,12 +3,12 @@
 FORGE is a runnable local system for guarded LLM-assisted Exponential Random
 Graph Model (ERGM) specification and interpretation. Given a binary network
 and a short domain description, it builds a graph-specific menu of valid ERGM
-terms, asks an LLM for structured candidate formulas, screens and fits those
-candidates, permits one checked revision, and produces a non-causal,
-model-grounded explanation.
+terms, asks an LLM for structured candidate formulas, fits and compares those
+candidates using simulation-based goodness of fit, allows up to four rounds of
+checked revision, and produces a non-causal, model-grounded explanation.
 
 Paper: *FORGE: An LLM-Assisted System for Proposing and Testing Explanations
-of Network Tie Formation* (EMNLP 2026 System Demonstrations).
+of Network Tie Formation* (AAAI-27 Demonstrations track submission).
 
 ## What is included
 
@@ -18,10 +18,17 @@ The repository contains the complete local workflow:
 2. **Valid-term construction** — build the ERGM terms supported by the graph
    direction and available attributes.
 3. **LLM proposal** — request JSON candidate formulas using only valid terms.
-4. **Model screening** — apply formula guardrails and rank successful MPLE
-   fits with an MPLE-based pseudo-BIC.
-5. **Checked revision** — request one small edit and keep it only if it passes
-   the checks and improves the recorded diagnostics.
+4. **Fitting and selection** — apply formula guardrails, fit each candidate
+   (plus an edge-only baseline) with stochastic approximation (SA), require
+   finite estimates, successful simulation, a density check (30 simulated
+   networks, relative error at most 25%), and computable GOF diagnostics, then
+   select the eligible candidate with the lowest GOF discrepancy
+   q(M) = max_k |z_k| computed from 100 simulated networks. MPLE pseudo-BIC is
+   recorded as a secondary diagnostic only.
+5. **Checked revision** — for up to four rounds, feed the current model, its
+   q(M), the largest GOF residuals, and every rejected edit back to the LLM,
+   ask for exactly one add / remove / replace, refit, and keep the edit only if
+   the revised model is eligible and q(M) strictly decreases.
 6. **Interpretation** — generate a term-linked explanation that separates
    supported associations from limitations and avoids causal claims.
 
@@ -64,8 +71,9 @@ python3 demo/live/server.py --port 8765
 
 Then open <http://127.0.0.1:8765/>. Choose an included example or paste a
 custom network, edit the short domain description, select an LLM, and click
-**Run live pipeline**. A typical small-network run takes roughly 30--60
-seconds, depending on the selected model and local R setup.
+**Run live pipeline**. A typical small-network run takes roughly one to three
+minutes: SA fitting plus 30 + 100 network simulations for every candidate and
+every revision round, and one LLM call per proposal, round, and explanation.
 
 The live interface currently supports:
 

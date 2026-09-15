@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>FORGE EMNLP Demo</title>
+    <title>FORGE Demo</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -165,15 +165,23 @@
 
           <section class="chart-section">
             <div class="panel-subhead compact">
-              <span>BIC Evidence (lower is better)</span>
+              <span id="chart-title">GOF discrepancy q(M) &middot; lower is better</span>
               <span id="best-model-label">M4</span>
             </div>
             <div id="bic-chart" class="bic-chart"></div>
           </section>
 
+          <section id="rounds-section" class="rounds-section" hidden>
+            <div class="panel-subhead compact">
+              <span>Revision Rounds (max 4)</span>
+              <span id="rounds-score">0/0 accepted</span>
+            </div>
+            <div id="rounds-list" class="rounds-list"></div>
+          </section>
+
           <section class="audit-section">
             <div class="panel-subhead compact">
-              <span>Checks</span>
+              <span id="checks-title">Checks</span>
               <span id="guardrail-score">0/0</span>
             </div>
             <div id="guardrail-list" class="guardrail-list"></div>

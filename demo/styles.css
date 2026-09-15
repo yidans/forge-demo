@@ -627,7 +627,7 @@ button {
 
 .bar-row {
   display: grid;
-  grid-template-columns: 76px 1fr 54px;
+  grid-template-columns: 118px 1fr 44px;
   gap: 8px;
   align-items: center;
   font-size: 12px;
@@ -1039,4 +1039,186 @@ body.forge-live .network-picker {
 /* Per-stage highlight lenses removed — hide the lens badge. */
 #lens-label {
   display: none;
+}
+
+/* ================= AAAI-27 revision: q(M) chart, eligibility, rounds ===== */
+
+.bar-row.ineligible .bar-label,
+.bar-row.ineligible .bar-value {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-color: rgba(90, 107, 130, 0.6);
+}
+
+.bar-row.ineligible .bar-fill {
+  background: repeating-linear-gradient(135deg, #c7d2e2 0 4px, #eef2f8 4px 8px);
+}
+
+.bar-row.selected .bar-label {
+  color: var(--ink);
+}
+
+.bar-row.selected .bar-label::after {
+  content: " \2713";
+  color: #15803d;
+  font-weight: 900;
+}
+
+.bar-row.rejected .bar-fill {
+  background: #c7d2e2;
+}
+
+.bar-row.rejected .bar-label,
+.bar-row.rejected .bar-value {
+  color: var(--muted);
+}
+
+.rounds-section {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f4f8fe;
+  overflow: hidden;
+}
+
+.rounds-section[hidden] {
+  display: none;
+}
+
+.rounds-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+}
+
+.round-item {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.round-item.accepted {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.round-item.rejected {
+  border-color: #fecaca;
+  background: #fff7f7;
+}
+
+.round-badge {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.round-item.accepted .round-badge {
+  background: #15803d;
+}
+
+.round-item.rejected .round-badge {
+  background: #b91c1c;
+}
+
+.round-edit {
+  display: block;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-weight: 750;
+  word-break: break-word;
+}
+
+.round-reason {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+}
+
+.round-q {
+  color: var(--ink);
+  font-weight: 800;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.round-q small {
+  display: block;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 10px;
+}
+
+.guardrail-dot[data-status="fail"] {
+  background: #b91c1c !important;
+}
+
+@media (min-width: 1181px) and (min-height: 880px) {
+  .rounds-section {
+    flex: 0 0 auto;
+    max-height: 32%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .rounds-section .rounds-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+}
+
+.chart-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.chart-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+
+/* Right column: let it scroll instead of crushing the summary band. */
+@media (min-width: 1181px) and (min-height: 880px) {
+  .right-panel {
+    overflow-y: auto;
+  }
+
+  .summary-band {
+    flex: 0 0 auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .term-section {
+    flex: 0 0 auto;
+    min-height: 0;
+  }
+
+  .term-section .term-list {
+    max-height: 206px;
+  }
+
+  .rounds-section {
+    max-height: none;
+  }
+
+  .rounds-section .rounds-list {
+    overflow: visible;
+  }
 }
