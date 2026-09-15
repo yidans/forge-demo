@@ -2150,7 +2150,7 @@ You are an ERGM expert. Return JSON only.
 
 user:
 Network: 12 researchers, 20 undirected collaboration ties,
-density 0.30, transitivity 0.47. Attributes: area, role, seniority.
+density 0.30, transitivity 0.36. Attributes: area, role, seniority.
 Description: collaboration follows research areas and lab roles.
 
 Valid terms L*: edges, gwesp(0.5), gwdsp(0.5), gwdegree(0.5),
@@ -2163,7 +2163,7 @@ absdiff("seniority").
         output: `{
   "mechanisms": [
     {"mechanism": "area homophily", "evidence": "most ties are within areas", "term": "nodematch(\\"area\\")"},
-    {"mechanism": "triadic closure", "evidence": "transitivity 0.47", "term": "gwesp(0.5, fixed=TRUE)"},
+    {"mechanism": "triadic closure", "evidence": "transitivity 0.36", "term": "gwesp(0.5, fixed=TRUE)"},
     {"mechanism": "degree heterogeneity", "evidence": "PIs have the most ties", "term": "gwdegree(0.5, fixed=TRUE)"}
   ],
   "specifications": [
@@ -2402,7 +2402,7 @@ You are an ERGM expert. Return JSON only.
 
 user:
 Network: 12 households, 18 undirected mutual-aid ties,
-density 0.27, transitivity 0.53. Attributes: block, tenure_group,
+density 0.27, transitivity 0.46. Attributes: block, tenure_group,
 tenure_years. Description: help flows within blocks and among
 long-tenured residents.
 
@@ -2416,7 +2416,7 @@ nodefactor("tenure_group"), absdiff("tenure_years").
         output: `{
   "mechanisms": [
     {"mechanism": "block homophily", "evidence": "most ties are within blocks", "term": "nodematch(\\"block\\")"},
-    {"mechanism": "triadic closure", "evidence": "transitivity 0.53", "term": "gwesp(0.5, fixed=TRUE)"},
+    {"mechanism": "triadic closure", "evidence": "transitivity 0.46", "term": "gwesp(0.5, fixed=TRUE)"},
     {"mechanism": "degree heterogeneity", "evidence": "long-tenured households have the most ties", "term": "gwdegree(0.5, fixed=TRUE)"}
   ],
   "specifications": [
