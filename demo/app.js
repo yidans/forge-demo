@@ -2470,6 +2470,7 @@ const mechanismTitle = document.getElementById("mechanism-title");
 const mechanismCopy = document.getElementById("mechanism-copy");
 const metricGrid = document.getElementById("metric-grid");
 const promptView = document.getElementById("prompt-view");
+const replayNote = document.getElementById("replay-note");
 const outputView = document.getElementById("output-view");
 const outputBadge = document.getElementById("output-badge");
 const summaryLabel = document.getElementById("summary-label");
@@ -2826,6 +2827,7 @@ function setStage(index) {
   theoryCopy.textContent = stage.theory;
   bestModelLabel.textContent = stage.chartLabel;
   if (chartTitle) chartTitle.textContent = stage.chartTitle || "GOF discrepancy q(M) · lower is better";
+  if (replayNote) replayNote.hidden = demo.id === "live";
   if (checksTitle) {
     checksTitle.textContent = stage.id === "fit" || stage.id === "refine" ? "Eligibility & acceptance checks" : "Checks";
   }
