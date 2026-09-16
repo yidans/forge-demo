@@ -1266,7 +1266,8 @@ function setStage(index) {
 
   networkTitle.textContent = demo.title;
   statusText.textContent = `${demo.shortLabel}: ${stage.status}`;
-  kicker.textContent = stage.id === "fit" || stage.id === "refine" || stage.id === "interpret" ? `${stage.kicker} · ${est.label}` : stage.kicker;
+  const estLabel = stage.estimatorLabel || est.label;
+  kicker.textContent = stage.id === "fit" || stage.id === "refine" || stage.id === "interpret" ? `${stage.kicker} · ${estLabel}` : stage.kicker;
   title.textContent = stage.title;
   lensLabel.textContent = stage.lens;
   mechanismTitle.textContent = stage.mechanismTitle;
