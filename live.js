@@ -57,6 +57,7 @@
   const PALETTE_VARS = ["--green", "--rose", "--blue"];
 
   const el = {};
+  let currentEstLabel = "SA";
   let running = false;
   let serverInfo = null;
 
@@ -304,7 +305,7 @@
   // ---------------------------------------------------------------- stage builders
 
   function baseStage(id, number, rail, subtitle, kicker, title, status, lens) {
-    return { id, number, rail, subtitle, kicker, title, status, lens, terms: [], bic: [], chartLabel: "pending" };
+    return { id, number, rail, subtitle, kicker, title, status, lens, terms: [], bic: [], chartLabel: "pending", estimatorLabel: currentEstLabel };
   }
 
   function intakeStage(ctx) {
@@ -644,6 +645,7 @@
       const model = el.model.value;
       const estimator = el.estimator ? el.estimator.value : "sa";
       const estLabel = { sa: "SA", mcmle: "MCMLE", mple: "MPLE" }[estimator] || "SA";
+      currentEstLabel = estLabel;
       const brief = {
         actors: el.actors.value.trim(),
         tie_meaning: el.tie.value.trim(),
