@@ -1238,3 +1238,20 @@ body.forge-live .network-picker {
 .replay-note[hidden] {
   display: none;
 }
+
+
+/* Estimator picker next to the network picker; directed edges. */
+.picker-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px 18px;
+}
+
+.edge.directed {
+  opacity: 0.7;
+}
+
+body.forge-live .picker-row {
+  display: none;
+}
