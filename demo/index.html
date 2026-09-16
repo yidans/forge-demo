@@ -14,9 +14,15 @@
           <a class="source-link" href="https://github.com/yidans/forge-demo">Source code and local run instructions</a>
         </div>
         <div class="top-actions">
-          <div class="network-picker" aria-label="Choose demo network">
-            <span class="network-label">Network</span>
-            <div id="network-picker" class="network-options"></div>
+          <div class="picker-row">
+            <div class="network-picker" aria-label="Choose demo network">
+              <span class="network-label">Network</span>
+              <div id="network-picker" class="network-options"></div>
+            </div>
+            <div class="network-picker" aria-label="Choose estimator">
+              <span class="network-label">Estimator</span>
+              <div id="estimator-picker" class="network-options"></div>
+            </div>
           </div>
           <div class="run-status" aria-live="polite">
             <span class="status-dot"></span>
@@ -32,7 +38,17 @@
             <option value="school" selected>School</option>
             <option value="lab">Lab</option>
             <option value="neighborhood">Neighborhood</option>
+            <option value="office">Office (directed)</option>
+            <option value="opensource">Open source</option>
             <option value="custom">Custom JSON</option>
+          </select>
+        </div>
+        <div class="live-field">
+          <label for="live-estimator">Estimator</label>
+          <select id="live-estimator">
+            <option value="sa" selected>SA</option>
+            <option value="mcmle">MCMLE</option>
+            <option value="mple">MPLE</option>
           </select>
         </div>
         <div class="live-field">
@@ -136,7 +152,7 @@
                 <span>Stage Input</span>
                 <button id="copy-prompt" class="ghost-button" type="button">Copy</button>
               </div>
-              <p id="replay-note" class="replay-note">Replay of a recorded run: the fit, GOF, and revision values on every stage come from an actual run of the pipeline on this network (SA fitting, density check, 100-simulation GOF, four revision rounds); the LLM prompts and rationales shown here are illustrative. Live mode with real LLM calls needs the local server and an API key (see the source link above).</p>
+              <p id="replay-note" class="replay-note">Replay of a recorded run: the fit, GOF, and revision values on every stage come from an actual run of the pipeline on this network with the selected estimator (SA, MCMLE, or MPLE fitting, density check, 100-simulation GOF, up to four revision rounds); the LLM prompts and rationales shown here are illustrative. Live mode with real LLM calls needs the local server and an API key (see the source link above).</p>
               <pre id="prompt-view" class="code-panel"></pre>
             </div>
             <div class="evidence-panel">

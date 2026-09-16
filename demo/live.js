@@ -16,7 +16,9 @@
   const ATTR_MAPS = {
     school: { group: "club", cohort: "grade", score: "activity" },
     lab: { group: "area", cohort: "role", score: "seniority" },
-    neighborhood: { group: "block", cohort: "tenure_group", score: "tenure_years" }
+    neighborhood: { group: "block", cohort: "tenure_group", score: "tenure_years" },
+    office: { group: "department", cohort: "level", score: "tenure" },
+    opensource: { group: "module", cohort: "role", score: "commits" }
   };
 
   const BRIEFS = {
@@ -34,6 +36,16 @@
       actors: "Actors are households in one neighborhood.",
       tie_meaning: "A tie means the households exchange practical help.",
       constraint: "Help flows within blocks and among long-tenured residents."
+    },
+    office: {
+      actors: "Actors are employees in a small company.",
+      tie_meaning: "A directed tie from A to B means A regularly asks B for work advice.",
+      constraint: "Advice flows within departments and toward senior staff, and is sometimes returned."
+    },
+    opensource: {
+      actors: "Actors are developers of one open-source project.",
+      tie_meaning: "A tie means the two developers edited the same files in the last release.",
+      constraint: "Maintainers coordinate their module and link modules together."
     },
     custom: {
       actors: "Actors are …",
@@ -105,7 +117,7 @@
     const demo = networkDemos.find((d) => d.id === sourceId);
     const map = ATTR_MAPS[sourceId];
     return {
-      directed: false,
+      directed: Boolean(demo.directed),
       nodes: demo.nodes.map((node) => ({
         id: node.id,
         attrs: {
@@ -437,11 +449,12 @@
     const eligible = fits.filter((f) => f.eligible);
     const fitted = fits.filter((f) => f.success);
     const densityPass = fits.filter((f) => f.density && f.density.pass).length;
-    const stage = baseStage("fit", "2", "Fit & select", "SA fit + GOF", "Stage 2", "Fit Candidates and Select by GOF",
-      "Stage 2: SA fit and selection (live)", "lowest q(M)");
+    const estLabel = ctx.estLabel || "SA";
+    const stage = baseStage("fit", "2", "Fit & select", `${estLabel} fit + GOF`, "Stage 2", "Fit Candidates and Select by GOF",
+      `Stage 2: ${estLabel} fit and selection (live)`, "lowest q(M)");
     const worst = winner.gof && winner.gof.details ? winner.gof.details[0] : null;
     stage.mechanismTitle = `${winner.label} wins with the smallest GOF discrepancy`;
-    stage.mechanismCopy = `Every candidate was just fitted with stochastic approximation in R (${fits.reduce((s, f) => s + (f.runtime || 0), 0).toFixed(0)}s). ${eligible.length}/${fits.length} passed the eligibility checks; ${winner.label} has the lowest q(M) = ${winner.q}.${worst ? ` Its largest remaining mismatch: ${residualText(worst)}.` : ""}`;
+    stage.mechanismCopy = `Every candidate was just fitted with ${estLabel} in R (${fits.reduce((s, f) => s + (f.runtime || 0), 0).toFixed(0)}s). ${eligible.length}/${fits.length} passed the eligibility checks; ${winner.label} has the lowest q(M) = ${winner.q}.${worst ? ` Its largest remaining mismatch: ${residualText(worst)}.` : ""}`;
     stage.metrics = [
       [String(winner.q), "lowest q(M)"],
       [`${eligible.length}/${fits.length}`, "eligible candidates"],
@@ -450,7 +463,7 @@
     ];
     stage.terms = winner.terms;
     stage.guardrails = [
-      [fitted.length === fits.length ? "pass" : "warn", `SA returned finite coefficients for ${fits.filter((f) => f.finite).length}/${fits.length} candidates`],
+      [fitted.length === fits.length ? "pass" : "warn", `${estLabel} returned finite coefficients for ${fits.filter((f) => f.finite).length}/${fits.length} candidates`],
       [densityPass === fitted.length ? "pass" : "warn", `Density check passed for ${densityPass}/${fitted.length} fitted candidates (≤25% error, 30 simulations)`],
       ["pass", `GOF computed from 100 simulations for ${eligible.length} eligible candidates`],
       ["pass", `Selected ${winner.label}: lowest q(M) = ${winner.q}`]
@@ -465,11 +478,13 @@
     stage.prompt = [
       `Stage 2 — statistical fitting and selection (R backend, no LLM call)`,
       ``,
+      `estimator: ${estLabel}`,
+      ``,
       `candidate pool:`,
       ...fits.map((f) => `  ${f.label} = ${joinTerms(f.terms)}`),
       ``,
       `procedure:`,
-      `  1. fit each candidate with stochastic approximation (SA)`,
+      `  1. fit each candidate with ${estLabel}`,
       `  2. eligibility: finite coefficients, successful simulation,`,
       `     density check (30 simulated networks, |relative error| <= 25%),`,
       `     computable GOF diagnostics`,
@@ -627,6 +642,8 @@
     try {
       const sourceId = el.source.value;
       const model = el.model.value;
+      const estimator = el.estimator ? el.estimator.value : "sa";
+      const estLabel = { sa: "SA", mcmle: "MCMLE", mple: "MPLE" }[estimator] || "SA";
       const brief = {
         actors: el.actors.value.trim(),
         tie_meaning: el.tie.value.trim(),
@@ -659,11 +676,13 @@
       demo.stages.push(specStage(ctx));
       showLatestStage();
 
-      setLiveStatus("Stage 2: SA fitting, density check and 100-simulation GOF in R (about a minute)…", "running");
+      setLiveStatus(`Stage 2: ${estLabel} fitting, density check and 100-simulation GOF in R…`, "running");
       const candidates = ctx.propose.specifications
         .filter((s) => s.library_compliant)
         .map((s) => ({ label: s.label, terms: s.formula }));
-      ctx.screen = await postJSON(API.screen, { network: payload, candidates });
+      ctx.estimator = estimator;
+      ctx.estLabel = estLabel;
+      ctx.screen = await postJSON(API.screen, { network: payload, candidates, estimator });
       demo.stages.push(fitStage(ctx));
       showLatestStage();
 
@@ -690,6 +709,7 @@
           model,
           round,
           seed: ctx.screen.seed,
+          estimator,
           history: ctx.rounds.map((r) => ({
             round: r.round, edit: r.edit, accepted: r.accepted,
             q_before: r.q_before, q_after: r.q_after, reason: r.rejection_reason || null
@@ -741,6 +761,7 @@
     el.bar = document.getElementById("live-bar");
     el.source = document.getElementById("live-source");
     el.model = document.getElementById("live-model");
+    el.estimator = document.getElementById("live-estimator");
     el.actors = document.getElementById("live-actors");
     el.tie = document.getElementById("live-tie");
     el.constraint = document.getElementById("live-constraint");

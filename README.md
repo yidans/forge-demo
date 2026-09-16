@@ -33,9 +33,14 @@ The repository contains the complete local workflow:
    supported associations from limitations and avoids causal claims.
 
 The browser shows the network, prompts, LLM responses, fit results, checks,
-revision decision, and final interpretation as the run proceeds. Three small
-example networks are included, and users may provide a custom network in the
-documented JSON format.
+revision decision, and final interpretation as the run proceeds. Five small
+example networks are included (school friendship, research collaboration,
+neighborhood mutual aid, a directed office advice network, and an open-source
+project), and users may provide a custom network in the documented JSON
+format. The fitting backend is selectable: stochastic approximation (SA,
+the default), Monte Carlo maximum likelihood (MCMLE), or maximum
+pseudolikelihood (MPLE). Selection and revision use the same simulation-based
+GOF rule whichever estimator produces the fit.
 
 ## Requirements
 

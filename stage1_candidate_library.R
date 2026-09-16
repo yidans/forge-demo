@@ -7,7 +7,7 @@ safe_quote <- function(name) {
   sprintf('"%s"', escaped)
 }
 
-classify_attribute <- function(values) {
+classify_attribute <- function(values, max_unique_categorical = 8) {
   values <- values[!is.na(values)]
   if (length(values) == 0) {
     return(list(type = "empty", unique = 0, classification = "none"))
@@ -24,7 +24,7 @@ classify_attribute <- function(values) {
     classification <- "categorical"
   } else if (is_numeric) {
     integer_like <- all(abs(values - round(values)) < .Machine$double.eps ^ 0.5)
-    classification <- if (unique_count <= 8 && integer_like) "categorical" else "numeric"
+    classification <- if (unique_count <= max_unique_categorical && integer_like) "categorical" else "numeric"
   } else {
     classification <- "unknown"
   }
@@ -134,7 +134,8 @@ build_attribute_terms <- function(network_obj,
                                   include_mixing = TRUE,
                                   max_free_params = 20,
                                   min_expected_cell = 5,
-                                  min_expected_dyads_mix = 30) {
+                                  min_expected_dyads_mix = 30,
+                                  max_unique_categorical = 8) {
 
   attrs <- setdiff(list.vertex.attributes(network_obj), c("na", "vertex.names"))
   n_nodes <- network.size(network_obj)
@@ -145,7 +146,7 @@ build_attribute_terms <- function(network_obj,
 
   for (attr in attrs) {
     values <- network::get.vertex.attribute(network_obj, attr)
-    meta <- classify_attribute(values)
+    meta <- classify_attribute(values, max_unique_categorical)
     attr_details[[attr]] <- meta
 
     # Numeric main effects on tie propensity
@@ -229,6 +230,7 @@ build_admissible_library <- function(network_obj,
                                      max_free_params = 20,
                                      min_expected_cell = 5,
                                      min_expected_dyads_mix = 30,
+                                     max_unique_categorical = 8,
                                      dyad_covariates = NULL) {
 
   stopifnot(inherits(network_obj, "network"))
@@ -253,7 +255,8 @@ build_admissible_library <- function(network_obj,
     include_mixing              = include_mixing,
     max_free_params             = max_free_params,
     min_expected_cell           = min_expected_cell,
-    min_expected_dyads_mix      = min_expected_dyads_mix
+    min_expected_dyads_mix      = min_expected_dyads_mix,
+    max_unique_categorical      = max_unique_categorical
   )
 
   dyad_terms <- build_dyad_covariate_terms(network_obj, dyad_covariates)
@@ -275,7 +278,8 @@ build_admissible_library <- function(network_obj,
     guardrails = list(
       max_free_params = max_free_params,
       min_expected_cell = min_expected_cell,
-      min_expected_dyads_mix = min_expected_dyads_mix
+      min_expected_dyads_mix = min_expected_dyads_mix,
+      max_unique_categorical = max_unique_categorical
     ),
     toggles = list(
       include_twopath = include_twopath,

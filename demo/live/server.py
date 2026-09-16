@@ -41,6 +41,7 @@ R_TIMEOUT = 900
 MAX_ROUNDS = 4
 DEFAULT_SEED = 42
 MAX_NODES = 60
+ESTIMATOR_LABELS = {"sa": "SA", "mcmle": "MCMLE", "mple": "MPLE"}
 MAX_EDGES = 400
 LIBRARY_OPTIONS = {"min_expected_cell": 3}
 
@@ -271,7 +272,7 @@ def describe_edit(edit):
     return f"{action} {edit.get('term')}"
 
 
-def build_revise_prompt(current, library_terms, brief, history, round_no):
+def build_revise_prompt(current, library_terms, brief, history, round_no, estimator="sa"):
     coef_lines = "\n".join(
         f"- {c['term']}: estimate={c['estimate']}, SE={c['std_error']}"
         for c in current.get("coefficients", [])
@@ -288,6 +289,7 @@ def build_revise_prompt(current, library_terms, brief, history, round_no):
     user = f"""Revision round {round_no} of {MAX_ROUNDS}.
 
 Current model M_{round_no - 1}: {' + '.join(current['terms'])}
+Estimator: {ESTIMATOR_LABELS.get(estimator, 'SA')}
 Current GOF discrepancy q(M_{round_no - 1}) = {current.get('q')}   (largest |z| over the GOF bins; lower is better)
 Largest GOF residuals (positive z = the observed count exceeds the simulated mean):
 {residual_lines}
@@ -385,7 +387,7 @@ Coefficient table:
 {coef_lines}
 
 Fit and diagnostic evidence:
-- Estimator: stochastic approximation (SA)
+- Estimator: {ESTIMATOR_LABELS.get(str(final.get('estimator', 'sa')).lower(), 'SA')}
 - GOF discrepancy q(M) = {gof.get('q', 'NA')} (largest |z| over {gof.get('bins', 'NA')} GOF bins from {gof.get('nsim', 100)} simulated networks; lower is better)
 - Density check: {'passed' if (final.get('density') or {}).get('pass') else 'not recorded'}
 - Secondary diagnostic: MPLE pseudo-BIC = {final.get('pseudo_bic')}
@@ -485,6 +487,16 @@ def api_propose(payload):
     }
 
 
+ESTIMATORS = ("sa", "mcmle", "mple")
+
+
+def pick_estimator(payload):
+    est = str(payload.get("estimator", "sa")).strip().lower()
+    if est not in ESTIMATORS:
+        raise ApiError(f"estimator must be one of {ESTIMATORS}")
+    return est
+
+
 def api_screen(payload):
     """Stage 2: SA fit every candidate plus the edge-only baseline, apply the
     eligibility checks, and select the eligible model with the lowest q(M)."""
@@ -496,8 +508,10 @@ def api_screen(payload):
     if "Edge-only baseline" not in labels:
         candidates = candidates + [{"label": "Edge-only baseline", "terms": ["edges"]}]
     seed = int(payload.get("seed", DEFAULT_SEED))
+    estimator = pick_estimator(payload)
     result = run_r({"mode": "evaluate", "network": network, "candidates": candidates,
-                    "seed": seed, "library_options": LIBRARY_OPTIONS})
+                    "seed": seed, "estimator": estimator, "library_options": LIBRARY_OPTIONS})
+    result["estimator"] = estimator
     if not result.get("winner"):
         raise ApiError("no candidate passed the eligibility checks (finite SA estimates, density check, computable GOF)", 422)
     return result
@@ -533,6 +547,7 @@ def apply_edit(action, term, target, current_terms):
 def current_from_fit(fit, label=None):
     return {
         "label": label or fit.get("label"),
+        "estimator": fit.get("estimator"),
         "terms": fit["terms"],
         "q": fit.get("q"),
         "pseudo_bic": fit.get("pseudo_bic"),
@@ -558,7 +573,8 @@ def api_revise(payload):
         raise ApiError(f"revision budget is {MAX_ROUNDS} rounds")
     seed = int(payload.get("seed", DEFAULT_SEED))
 
-    system, user = build_revise_prompt(current, library_terms, brief, history, round_no)
+    estimator = pick_estimator(payload)
+    system, user = build_revise_prompt(current, library_terms, brief, history, round_no, estimator)
     parsed, raw, latency = call_llm_json(system, user, model, temperature=0.0)
 
     action = str(parsed.get("action", "")).strip().lower()
@@ -595,7 +611,7 @@ def api_revise(payload):
 
     evaluated = run_r({"mode": "evaluate", "network": network,
                        "candidates": [{"label": f"Round {round_no}", "terms": new_terms}],
-                       "seed": seed, "library_options": LIBRARY_OPTIONS})
+                       "seed": seed, "estimator": estimator, "library_options": LIBRARY_OPTIONS})
     revised = evaluated["fits"][0]
     response["refit"] = revised
     response["eligible"] = bool(revised.get("eligible"))

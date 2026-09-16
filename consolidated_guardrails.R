@@ -307,6 +307,19 @@ check_guardrail_6_library_enforcement <- function(terms, library_terms) {
     }
   }
   
+  # Generic fallback for every attribute-term family (nodeicov, nodeocov, nodeifactor, ...):
+  # accept name(attr), name("attr"), and name('attr') for any library term written name("attr").
+  for (lib_term in library_terms) {
+    attr_match <- regmatches(lib_term, regexec("^([A-Za-z_]+)\\(['\"]([^'\"]+)['\"]\\)$", lib_term))
+    if (length(attr_match[[1]]) == 3) {
+      fam <- attr_match[[1]][2]; attr_name <- attr_match[[1]][3]
+      library_terms_all_formats <- c(library_terms_all_formats,
+                                    paste0(fam, "(", attr_name, ")"),
+                                    paste0(fam, "('", attr_name, "')"))
+    }
+  }
+  library_terms_all_formats <- unique(library_terms_all_formats)
+
   invalid_terms <- base_terms[!base_terms %in% library_terms_all_formats]
   
   if (length(invalid_terms) > 0) {

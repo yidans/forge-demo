@@ -152,11 +152,13 @@ fit_mple <- function(net, terms) {
   list(fit = fit, pseudo_bic = round(finite_or_na(BIC(fit)), 2))
 }
 
-fit_sa <- function(net, terms, seed) {
-  suppressMessages(suppressWarnings(
-    ergm(make_formula(net, terms),
-         control = control.ergm(main.method = "Stochastic-Approximation", seed = seed))
-  ))
+fit_with <- function(net, terms, seed, estimator = "sa") {
+  f <- make_formula(net, terms)
+  suppressMessages(suppressWarnings(switch(estimator,
+    mcmle = ergm(f, control = control.ergm(main.method = "MCMLE", seed = seed)),
+    mple = ergm(f, estimate = "MPLE", control = control.ergm(seed = seed)),
+    ergm(f, control = control.ergm(main.method = "Stochastic-Approximation", seed = seed))
+  )))
 }
 
 density_check <- function(fit, net, seed, nsim = 30, tol = 0.25) {
@@ -238,7 +240,7 @@ guardrail_failure <- function(g) {
   "guardrail check failed"
 }
 
-evaluate_candidate <- function(net, lib, cand, seed) {
+evaluate_candidate <- function(net, lib, cand, seed, estimator = "sa") {
   started <- Sys.time()
   terms <- unlist(cand$terms)
   directed <- network::is.directed(net)
@@ -258,14 +260,14 @@ evaluate_candidate <- function(net, lib, cand, seed) {
     entry$success <- FALSE
     return(finish(entry, FALSE, paste("incompatible specification:", guardrail_failure(entry$guardrails))))
   }
-  fit <- tryCatch(fit_sa(net, terms, seed), error = function(e) e)
+  fit <- tryCatch(fit_with(net, terms, seed, estimator), error = function(e) e)
   if (inherits(fit, "error")) {
     entry$success <- FALSE
     entry$error <- conditionMessage(fit)
-    return(finish(entry, FALSE, paste("SA fit failed:", conditionMessage(fit))))
+    return(finish(entry, FALSE, paste(toupper(estimator), "fit failed:", conditionMessage(fit))))
   }
   entry$success <- TRUE
-  entry$estimator <- "SA"
+  entry$estimator <- toupper(estimator)
   entry$coefficients <- coef_table(fit)
   entry$finite <- all(is.finite(coef(fit)))
   mp <- tryCatch(fit_mple(net, terms), error = function(e) NULL)
@@ -308,14 +310,15 @@ run_evaluate <- function(job) {
   net <- build_network(job$network)
   lib <- build_library(net, job)
   seed <- as.integer(job$seed %||% 42)
-  fits <- lapply(job$candidates, function(cand) evaluate_candidate(net, lib, cand, seed))
+  estimator <- tolower(job$estimator %||% "sa")
+  fits <- lapply(job$candidates, function(cand) evaluate_candidate(net, lib, cand, seed, estimator))
   # The edge-only baseline is exempt from the size guardrail; every other winner must pass.
   selectable <- vapply(fits, function(f) {
     isTRUE(f$eligible) && (identical(f$label, "Edge-only baseline") || core_guardrails_pass(f))
   }, logical(1))
   qs <- vapply(seq_along(fits), function(i) if (selectable[i]) fits[[i]]$q else Inf, numeric(1))
   winner <- if (any(is.finite(qs))) fits[[which.min(qs)]]$label else NULL
-  list(ok = TRUE, seed = seed, winner = winner, n_eligible = sum(selectable), fits = fits)
+  list(ok = TRUE, seed = seed, estimator = estimator, winner = winner, n_eligible = sum(selectable), fits = fits)
 }
 
 result <- tryCatch({
