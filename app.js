@@ -1191,7 +1191,8 @@ function renderChart(rows, label) {
     const fill = document.createElement("span");
     fill.className = "bar-fill";
     const numeric = typeof value === "number" && Number.isFinite(value);
-    const width = !numeric ? 100 : max === min ? 80 : 20 + ((max - value) / (max - min)) * 78;
+    // Bar length is proportional to q(M): lower is better, so the selected model has the shortest bar.
+    const width = !numeric ? 100 : Math.max(6, (100 * value) / max);
     fill.style.width = `${width}%`;
     track.appendChild(fill);
     const valueEl = document.createElement("span");
