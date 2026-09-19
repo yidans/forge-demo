@@ -1,33 +1,37 @@
-# FORGE Workspace Guide
+# FORGE Repository Guide
 
-Run all commands from the repository root. Active R scripts source one another
+Run all commands from the repository root; the R scripts source one another
 with root-relative paths.
 
-## Current layout
+## Layout
 
-- `demo/`: cached browser interface and optional local live server.
-- `data/raw/external/`: the two external benchmark source files.
-- `evaluation/`: paper-locked benchmark summary and figure generator.
-- `paper/`: the current EMNLP manuscript source and figures.
-- `scripts/`: installation and maintenance utilities.
-- `results/`: locally generated Stage 0-4 outputs; ignored by Git.
+- `demo/`: the browser client (`index.html`, `app.js`, `styles.css`, `live.js`)
+  and the local live server (`live/server.py`, `live/run_stage.R`).
+  The static walkthrough at <https://yidans.github.io/forge-demo/> is published
+  from this directory with `scripts/publish_pages.sh`.
+- `consolidated_guardrails.R`, `stage1_candidate_library.R`: the deterministic
+  specification checks and the valid-term (L*) builder used by both the live
+  server and the offline scripts.
+- `evaluation/`: the data behind the numbers reported in the paper, and the
+  recorded example runs that the static walkthrough replays
+  (`evaluation/demo_examples/`).
+- `stage0_*.R` … `stage4_*.R`, `benchmark_datasets.R`: the offline experiment
+  scripts (see the README section "Offline experiment scripts").
+- `prompts/`: saved Stage 1 and Stage 4 prompts from the offline experiments.
+- `data/raw/external/`: two external benchmark source files used by the
+  offline scripts.
+- `docs/input_format.md`: the custom-network JSON format.
+- `scripts/`: dependency installation, data export, and Pages publishing.
+- `results/`: locally generated outputs; ignored by Git.
 
-The public release intentionally omits local build archives, videos, cached
-network objects, and development results. They are not required to run FORGE.
+The public release omits videos, build archives, cached network objects, and
+development results; none are needed to run FORGE.
 
-## Naming rules
+## Conventions
 
-- Use lowercase `snake_case` for directories and ordinary files.
-- Keep standard repository names uppercase: `README.md` and `LICENSE`.
-- Do not add `final`, `fixed`, `improved`, or numbered version suffixes to the
-  canonical source. Replace the canonical file after verification instead.
-- Put generated experiment artifacts in `results/`, prompts in `prompts/`, and
-  public deliverables in `dist/`.
-- Use `tmp/` only for disposable local work; it is ignored and may be deleted.
-
-## Canonical Stage 3 files
-
-- `stage3_pipeline.R`: finalist selection and MCMLE fitting.
-- `stage3_refinement_pipeline.R`: the single supported refinement pipeline.
-- `results/stage3_refinement_history.{json,rds}`: refinement provenance.
-- `results/stage3_refinement_summary.csv`: refinement summary.
+- Lowercase `snake_case` for directories and ordinary files; `README.md` and
+  `LICENSE` stay uppercase.
+- No `final`, `fixed`, or numbered suffixes on canonical files: replace the
+  canonical file after verification instead.
+- Put generated experiment artifacts in `results/` and disposable work in
+  `tmp/` (both ignored).

@@ -1,0 +1,59 @@
+{
+  "network": "Enron",
+  "source_record": "experiments/small_network_sa_rerun_20260821/results/raw/stage3_gof_primary/enron_emails/result.json",
+  "initial": {
+    "terms": [
+      "edges",
+      "mutual",
+      "gwesp(decay=0.5, fixed=TRUE)",
+      "gwodegree(decay=0.5, fixed=TRUE)",
+      "gwidegree(decay=0.5, fixed=TRUE)"
+    ],
+    "q": 73.92110837324289,
+    "gof_rmse": 14.433177776739102,
+    "gof_q95": 32.94760198423418,
+    "pbic": 12312.867110085326,
+    "largest_residual": "esp.OTP13"
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "edit": "add gwdsp(decay=0.5, fixed=TRUE)",
+      "decision": "rejected",
+      "reason": "density screen"
+    },
+    {
+      "round": 2,
+      "edit": "add nodematch(\"role\")",
+      "decision": "rejected",
+      "reason": "density screen"
+    },
+    {
+      "round": 3,
+      "edit": "replace gwesp(0.5) with gwesp(0.25)",
+      "decision": "rejected",
+      "reason": "density screen"
+    },
+    {
+      "round": 4,
+      "edit": "add nodeofactor(\"role\")",
+      "decision": "accepted",
+      "reason": "eligible and lower q(M)"
+    }
+  ],
+  "final": {
+    "terms": [
+      "edges",
+      "mutual",
+      "gwesp(decay=0.5, fixed=TRUE)",
+      "gwodegree(decay=0.5, fixed=TRUE)",
+      "gwidegree(decay=0.5, fixed=TRUE)",
+      "nodeofactor(\"role\")"
+    ],
+    "q": 29.409664315904486,
+    "gof_rmse": 4.719434556540456,
+    "gof_q95": 10.147667309526389,
+    "pbic": 12182.46236556113,
+    "q_reduction_percent": 60.21479525522123
+  }
+}

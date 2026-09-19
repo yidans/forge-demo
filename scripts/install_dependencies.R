@@ -1,4 +1,6 @@
 #!/usr/bin/env Rscript
+# The local demo (demo/live) needs only network, ergm, and jsonlite.
+# The remaining packages are used by the offline experiment scripts.
 
 cran_packages <- c(
   "concorR",

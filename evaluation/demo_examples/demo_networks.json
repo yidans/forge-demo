@@ -1,0 +1,1140 @@
+{
+ "school": {
+  "directed": false,
+  "attrs": {
+   "group": "club",
+   "cohort": "grade",
+   "score": "activity"
+  },
+  "nodes": [
+   {
+    "id": "ada",
+    "name": "Ada",
+    "group": "Robotics",
+    "cohort": "11",
+    "score": 9,
+    "x": 132,
+    "y": 84
+   },
+   {
+    "id": "ben",
+    "name": "Ben",
+    "group": "Robotics",
+    "cohort": "11",
+    "score": 8,
+    "x": 244,
+    "y": 74
+   },
+   {
+    "id": "cal",
+    "name": "Cal",
+    "group": "Robotics",
+    "cohort": "10",
+    "score": 7,
+    "x": 188,
+    "y": 178
+   },
+   {
+    "id": "dia",
+    "name": "Dia",
+    "group": "Robotics",
+    "cohort": "10",
+    "score": 5,
+    "x": 312,
+    "y": 178
+   },
+   {
+    "id": "eli",
+    "name": "Eli",
+    "group": "Drama",
+    "cohort": "11",
+    "score": 6,
+    "x": 462,
+    "y": 92
+   },
+   {
+    "id": "fay",
+    "name": "Fay",
+    "group": "Drama",
+    "cohort": "11",
+    "score": 7,
+    "x": 590,
+    "y": 102
+   },
+   {
+    "id": "gia",
+    "name": "Gia",
+    "group": "Drama",
+    "cohort": "10",
+    "score": 6,
+    "x": 520,
+    "y": 206
+   },
+   {
+    "id": "hal",
+    "name": "Hal",
+    "group": "Drama",
+    "cohort": "10",
+    "score": 5,
+    "x": 632,
+    "y": 244
+   },
+   {
+    "id": "ivy",
+    "name": "Ivy",
+    "group": "Studio",
+    "cohort": "12",
+    "score": 9,
+    "x": 172,
+    "y": 332
+   },
+   {
+    "id": "jay",
+    "name": "Jay",
+    "group": "Studio",
+    "cohort": "12",
+    "score": 8,
+    "x": 304,
+    "y": 332
+   },
+   {
+    "id": "kim",
+    "name": "Kim",
+    "group": "Studio",
+    "cohort": "11",
+    "score": 4,
+    "x": 438,
+    "y": 342
+   },
+   {
+    "id": "leo",
+    "name": "Leo",
+    "group": "Robotics",
+    "cohort": "12",
+    "score": 6,
+    "x": 356,
+    "y": 258
+   }
+  ],
+  "edges": [
+   [
+    "ada",
+    "ben"
+   ],
+   [
+    "ada",
+    "cal"
+   ],
+   [
+    "ben",
+    "cal"
+   ],
+   [
+    "ben",
+    "dia"
+   ],
+   [
+    "cal",
+    "dia"
+   ],
+   [
+    "eli",
+    "fay"
+   ],
+   [
+    "eli",
+    "gia"
+   ],
+   [
+    "fay",
+    "gia"
+   ],
+   [
+    "gia",
+    "hal"
+   ],
+   [
+    "ivy",
+    "jay"
+   ],
+   [
+    "ivy",
+    "kim"
+   ],
+   [
+    "jay",
+    "kim"
+   ],
+   [
+    "jay",
+    "leo"
+   ],
+   [
+    "cal",
+    "leo"
+   ],
+   [
+    "dia",
+    "leo"
+   ],
+   [
+    "leo",
+    "kim"
+   ],
+   [
+    "dia",
+    "eli"
+   ],
+   [
+    "kim",
+    "gia"
+   ]
+  ]
+ },
+ "lab": {
+  "directed": false,
+  "attrs": {
+   "group": "area",
+   "cohort": "role",
+   "score": "seniority"
+  },
+  "nodes": [
+   {
+    "id": "noor",
+    "name": "Noor",
+    "group": "NLP",
+    "cohort": "PI",
+    "score": 9,
+    "x": 132,
+    "y": 84
+   },
+   {
+    "id": "omar",
+    "name": "Omar",
+    "group": "NLP",
+    "cohort": "Postdoc",
+    "score": 7,
+    "x": 244,
+    "y": 74
+   },
+   {
+    "id": "pia",
+    "name": "Pia",
+    "group": "NLP",
+    "cohort": "Student",
+    "score": 4,
+    "x": 188,
+    "y": 178
+   },
+   {
+    "id": "qin",
+    "name": "Qin",
+    "group": "NLP",
+    "cohort": "Student",
+    "score": 3,
+    "x": 312,
+    "y": 178
+   },
+   {
+    "id": "rui",
+    "name": "Rui",
+    "group": "Vision",
+    "cohort": "PI",
+    "score": 9,
+    "x": 462,
+    "y": 92
+   },
+   {
+    "id": "sol",
+    "name": "Sol",
+    "group": "Vision",
+    "cohort": "Postdoc",
+    "score": 6,
+    "x": 590,
+    "y": 102
+   },
+   {
+    "id": "tao",
+    "name": "Tao",
+    "group": "Vision",
+    "cohort": "Student",
+    "score": 3,
+    "x": 520,
+    "y": 206
+   },
+   {
+    "id": "uma",
+    "name": "Uma",
+    "group": "Vision",
+    "cohort": "Student",
+    "score": 2,
+    "x": 172,
+    "y": 332
+   },
+   {
+    "id": "val",
+    "name": "Val",
+    "group": "Systems",
+    "cohort": "PI",
+    "score": 8,
+    "x": 172,
+    "y": 332
+   },
+   {
+    "id": "wes",
+    "name": "Wes",
+    "group": "Systems",
+    "cohort": "Postdoc",
+    "score": 6,
+    "x": 304,
+    "y": 332
+   },
+   {
+    "id": "xia",
+    "name": "Xia",
+    "group": "Systems",
+    "cohort": "Student",
+    "score": 3,
+    "x": 438,
+    "y": 342
+   },
+   {
+    "id": "yan",
+    "name": "Yan",
+    "group": "Systems",
+    "cohort": "Student",
+    "score": 4,
+    "x": 356,
+    "y": 258
+   }
+  ],
+  "edges": [
+   [
+    "noor",
+    "omar"
+   ],
+   [
+    "noor",
+    "pia"
+   ],
+   [
+    "omar",
+    "pia"
+   ],
+   [
+    "omar",
+    "qin"
+   ],
+   [
+    "pia",
+    "qin"
+   ],
+   [
+    "rui",
+    "sol"
+   ],
+   [
+    "rui",
+    "tao"
+   ],
+   [
+    "sol",
+    "uma"
+   ],
+   [
+    "tao",
+    "uma"
+   ],
+   [
+    "sol",
+    "tao"
+   ],
+   [
+    "val",
+    "wes"
+   ],
+   [
+    "val",
+    "yan"
+   ],
+   [
+    "wes",
+    "xia"
+   ],
+   [
+    "xia",
+    "yan"
+   ],
+   [
+    "wes",
+    "yan"
+   ],
+   [
+    "pia",
+    "rui"
+   ],
+   [
+    "qin",
+    "tao"
+   ],
+   [
+    "yan",
+    "qin"
+   ],
+   [
+    "xia",
+    "tao"
+   ],
+   [
+    "noor",
+    "val"
+   ]
+  ]
+ },
+ "neighborhood": {
+  "directed": false,
+  "attrs": {
+   "group": "block",
+   "cohort": "tenure_group",
+   "score": "tenure_years"
+  },
+  "nodes": [
+   {
+    "id": "nora",
+    "name": "Nora",
+    "group": "North",
+    "cohort": "Long",
+    "score": 12,
+    "x": 132,
+    "y": 84
+   },
+   {
+    "id": "theo",
+    "name": "Theo",
+    "group": "North",
+    "cohort": "Mid",
+    "score": 6,
+    "x": 244,
+    "y": 74
+   },
+   {
+    "id": "mina",
+    "name": "Mina",
+    "group": "North",
+    "cohort": "New",
+    "score": 2,
+    "x": 188,
+    "y": 178
+   },
+   {
+    "id": "otis",
+    "name": "Otis",
+    "group": "North",
+    "cohort": "Mid",
+    "score": 5,
+    "x": 312,
+    "y": 178
+   },
+   {
+    "id": "park",
+    "name": "Park",
+    "group": "Market",
+    "cohort": "Long",
+    "score": 15,
+    "x": 462,
+    "y": 92
+   },
+   {
+    "id": "raya",
+    "name": "Raya",
+    "group": "Market",
+    "cohort": "Mid",
+    "score": 7,
+    "x": 590,
+    "y": 102
+   },
+   {
+    "id": "sam",
+    "name": "Sam",
+    "group": "Market",
+    "cohort": "New",
+    "score": 1,
+    "x": 520,
+    "y": 206
+   },
+   {
+    "id": "tess",
+    "name": "Tess",
+    "group": "Market",
+    "cohort": "New",
+    "score": 2,
+    "x": 632,
+    "y": 244
+   },
+   {
+    "id": "uma",
+    "name": "Uma",
+    "group": "Riverside",
+    "cohort": "Long",
+    "score": 11,
+    "x": 172,
+    "y": 332
+   },
+   {
+    "id": "vic",
+    "name": "Vic",
+    "group": "Riverside",
+    "cohort": "Mid",
+    "score": 6,
+    "x": 304,
+    "y": 332
+   },
+   {
+    "id": "wren",
+    "name": "Wren",
+    "group": "Riverside",
+    "cohort": "New",
+    "score": 1,
+    "x": 438,
+    "y": 342
+   },
+   {
+    "id": "zed",
+    "name": "Zed",
+    "group": "Riverside",
+    "cohort": "Long",
+    "score": 14,
+    "x": 356,
+    "y": 258
+   }
+  ],
+  "edges": [
+   [
+    "nora",
+    "theo"
+   ],
+   [
+    "nora",
+    "mina"
+   ],
+   [
+    "theo",
+    "mina"
+   ],
+   [
+    "theo",
+    "otis"
+   ],
+   [
+    "mina",
+    "otis"
+   ],
+   [
+    "park",
+    "raya"
+   ],
+   [
+    "park",
+    "sam"
+   ],
+   [
+    "raya",
+    "tess"
+   ],
+   [
+    "sam",
+    "tess"
+   ],
+   [
+    "park",
+    "tess"
+   ],
+   [
+    "uma",
+    "vic"
+   ],
+   [
+    "vic",
+    "wren"
+   ],
+   [
+    "wren",
+    "zed"
+   ],
+   [
+    "uma",
+    "zed"
+   ],
+   [
+    "uma",
+    "wren"
+   ],
+   [
+    "otis",
+    "park"
+   ],
+   [
+    "mina",
+    "zed"
+   ],
+   [
+    "sam",
+    "wren"
+   ]
+  ]
+ },
+ "office": {
+  "directed": true,
+  "attrs": {
+   "group": "department",
+   "cohort": "level",
+   "score": "tenure"
+  },
+  "nodes": [
+   {
+    "id": "amy",
+    "name": "Amy",
+    "group": "Sales",
+    "cohort": "Senior",
+    "score": 9,
+    "x": 175,
+    "y": 65
+   },
+   {
+    "id": "bo",
+    "name": "Bo",
+    "group": "Sales",
+    "cohort": "Mid",
+    "score": 4,
+    "x": 275,
+    "y": 117
+   },
+   {
+    "id": "cy",
+    "name": "Cy",
+    "group": "Sales",
+    "cohort": "Junior",
+    "score": 1,
+    "x": 237,
+    "y": 201
+   },
+   {
+    "id": "dee",
+    "name": "Dee",
+    "group": "Sales",
+    "cohort": "Mid",
+    "score": 5,
+    "x": 113,
+    "y": 201
+   },
+   {
+    "id": "eve",
+    "name": "Eve",
+    "group": "Sales",
+    "cohort": "Junior",
+    "score": 2,
+    "x": 75,
+    "y": 117
+   },
+   {
+    "id": "finn",
+    "name": "Finn",
+    "group": "Engineering",
+    "cohort": "Senior",
+    "score": 11,
+    "x": 545,
+    "y": 55
+   },
+   {
+    "id": "gus",
+    "name": "Gus",
+    "group": "Engineering",
+    "cohort": "Mid",
+    "score": 6,
+    "x": 645,
+    "y": 107
+   },
+   {
+    "id": "hana",
+    "name": "Hana",
+    "group": "Engineering",
+    "cohort": "Junior",
+    "score": 1,
+    "x": 607,
+    "y": 191
+   },
+   {
+    "id": "ivan",
+    "name": "Ivan",
+    "group": "Engineering",
+    "cohort": "Mid",
+    "score": 3,
+    "x": 483,
+    "y": 191
+   },
+   {
+    "id": "jo",
+    "name": "Jo",
+    "group": "Engineering",
+    "cohort": "Junior",
+    "score": 2,
+    "x": 445,
+    "y": 107
+   },
+   {
+    "id": "kai",
+    "name": "Kai",
+    "group": "Support",
+    "cohort": "Senior",
+    "score": 8,
+    "x": 360,
+    "y": 247
+   },
+   {
+    "id": "lena",
+    "name": "Lena",
+    "group": "Support",
+    "cohort": "Mid",
+    "score": 4,
+    "x": 465,
+    "y": 305
+   },
+   {
+    "id": "mo",
+    "name": "Mo",
+    "group": "Support",
+    "cohort": "Junior",
+    "score": 1,
+    "x": 360,
+    "y": 363
+   },
+   {
+    "id": "nia",
+    "name": "Nia",
+    "group": "Support",
+    "cohort": "Junior",
+    "score": 2,
+    "x": 255,
+    "y": 305
+   }
+  ],
+  "edges": [
+   [
+    "bo",
+    "amy"
+   ],
+   [
+    "cy",
+    "amy"
+   ],
+   [
+    "dee",
+    "amy"
+   ],
+   [
+    "eve",
+    "amy"
+   ],
+   [
+    "cy",
+    "bo"
+   ],
+   [
+    "eve",
+    "dee"
+   ],
+   [
+    "amy",
+    "bo"
+   ],
+   [
+    "bo",
+    "dee"
+   ],
+   [
+    "dee",
+    "bo"
+   ],
+   [
+    "eve",
+    "cy"
+   ],
+   [
+    "gus",
+    "finn"
+   ],
+   [
+    "hana",
+    "finn"
+   ],
+   [
+    "ivan",
+    "finn"
+   ],
+   [
+    "jo",
+    "finn"
+   ],
+   [
+    "hana",
+    "gus"
+   ],
+   [
+    "jo",
+    "ivan"
+   ],
+   [
+    "ivan",
+    "gus"
+   ],
+   [
+    "gus",
+    "ivan"
+   ],
+   [
+    "finn",
+    "gus"
+   ],
+   [
+    "hana",
+    "ivan"
+   ],
+   [
+    "lena",
+    "kai"
+   ],
+   [
+    "mo",
+    "kai"
+   ],
+   [
+    "nia",
+    "kai"
+   ],
+   [
+    "mo",
+    "lena"
+   ],
+   [
+    "nia",
+    "lena"
+   ],
+   [
+    "kai",
+    "lena"
+   ],
+   [
+    "nia",
+    "mo"
+   ],
+   [
+    "dee",
+    "finn"
+   ],
+   [
+    "gus",
+    "amy"
+   ],
+   [
+    "lena",
+    "gus"
+   ],
+   [
+    "kai",
+    "amy"
+   ],
+   [
+    "ivan",
+    "kai"
+   ],
+   [
+    "mo",
+    "cy"
+   ]
+  ]
+ },
+ "opensource": {
+  "directed": false,
+  "attrs": {
+   "group": "module",
+   "cohort": "role",
+   "score": "commits"
+  },
+  "nodes": [
+   {
+    "id": "ana",
+    "name": "Ana",
+    "group": "Core",
+    "cohort": "Maintainer",
+    "score": 320,
+    "x": 170,
+    "y": 58
+   },
+   {
+    "id": "ben",
+    "name": "Ben",
+    "group": "Core",
+    "cohort": "Contributor",
+    "score": 140,
+    "x": 272,
+    "y": 99
+   },
+   {
+    "id": "cai",
+    "name": "Cai",
+    "group": "Core",
+    "cohort": "Contributor",
+    "score": 90,
+    "x": 272,
+    "y": 181
+   },
+   {
+    "id": "dan",
+    "name": "Dan",
+    "group": "Core",
+    "cohort": "Newcomer",
+    "score": 15,
+    "x": 170,
+    "y": 222
+   },
+   {
+    "id": "eli",
+    "name": "Eli",
+    "group": "Core",
+    "cohort": "Contributor",
+    "score": 60,
+    "x": 68,
+    "y": 181
+   },
+   {
+    "id": "fen",
+    "name": "Fen",
+    "group": "Core",
+    "cohort": "Newcomer",
+    "score": 8,
+    "x": 68,
+    "y": 99
+   },
+   {
+    "id": "gil",
+    "name": "Gil",
+    "group": "UI",
+    "cohort": "Maintainer",
+    "score": 280,
+    "x": 550,
+    "y": 52
+   },
+   {
+    "id": "hal",
+    "name": "Hal",
+    "group": "UI",
+    "cohort": "Contributor",
+    "score": 110,
+    "x": 653,
+    "y": 106
+   },
+   {
+    "id": "ira",
+    "name": "Ira",
+    "group": "UI",
+    "cohort": "Contributor",
+    "score": 70,
+    "x": 613,
+    "y": 193
+   },
+   {
+    "id": "jun",
+    "name": "Jun",
+    "group": "UI",
+    "cohort": "Newcomer",
+    "score": 12,
+    "x": 487,
+    "y": 193
+   },
+   {
+    "id": "kat",
+    "name": "Kat",
+    "group": "UI",
+    "cohort": "Newcomer",
+    "score": 20,
+    "x": 447,
+    "y": 106
+   },
+   {
+    "id": "lou",
+    "name": "Lou",
+    "group": "Docs",
+    "cohort": "Maintainer",
+    "score": 150,
+    "x": 360,
+    "y": 256
+   },
+   {
+    "id": "mia",
+    "name": "Mia",
+    "group": "Docs",
+    "cohort": "Contributor",
+    "score": 55,
+    "x": 484,
+    "y": 299
+   },
+   {
+    "id": "ned",
+    "name": "Ned",
+    "group": "Docs",
+    "cohort": "Newcomer",
+    "score": 10,
+    "x": 436,
+    "y": 368
+   },
+   {
+    "id": "oli",
+    "name": "Oli",
+    "group": "Docs",
+    "cohort": "Contributor",
+    "score": 40,
+    "x": 284,
+    "y": 368
+   },
+   {
+    "id": "pat",
+    "name": "Pat",
+    "group": "Docs",
+    "cohort": "Newcomer",
+    "score": 6,
+    "x": 236,
+    "y": 299
+   }
+  ],
+  "edges": [
+   [
+    "ana",
+    "ben"
+   ],
+   [
+    "ana",
+    "cai"
+   ],
+   [
+    "ana",
+    "dan"
+   ],
+   [
+    "ana",
+    "eli"
+   ],
+   [
+    "ana",
+    "fen"
+   ],
+   [
+    "ben",
+    "cai"
+   ],
+   [
+    "ben",
+    "eli"
+   ],
+   [
+    "cai",
+    "dan"
+   ],
+   [
+    "dan",
+    "eli"
+   ],
+   [
+    "eli",
+    "fen"
+   ],
+   [
+    "cai",
+    "fen"
+   ],
+   [
+    "gil",
+    "hal"
+   ],
+   [
+    "gil",
+    "ira"
+   ],
+   [
+    "gil",
+    "jun"
+   ],
+   [
+    "gil",
+    "kat"
+   ],
+   [
+    "hal",
+    "ira"
+   ],
+   [
+    "hal",
+    "jun"
+   ],
+   [
+    "ira",
+    "kat"
+   ],
+   [
+    "jun",
+    "kat"
+   ],
+   [
+    "hal",
+    "kat"
+   ],
+   [
+    "lou",
+    "mia"
+   ],
+   [
+    "lou",
+    "ned"
+   ],
+   [
+    "lou",
+    "oli"
+   ],
+   [
+    "lou",
+    "pat"
+   ],
+   [
+    "mia",
+    "oli"
+   ],
+   [
+    "mia",
+    "ned"
+   ],
+   [
+    "ned",
+    "pat"
+   ],
+   [
+    "oli",
+    "pat"
+   ],
+   [
+    "ana",
+    "gil"
+   ],
+   [
+    "gil",
+    "lou"
+   ],
+   [
+    "ana",
+    "lou"
+   ],
+   [
+    "ben",
+    "hal"
+   ]
+  ]
+ }
+}

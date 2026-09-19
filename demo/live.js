@@ -790,6 +790,9 @@
     el.bar.hidden = false;
   }
 
+  // Live mode exists only on the local server (server.py binds 127.0.0.1); skip the probe elsewhere.
+  if (!/^(127\.0\.0\.1|localhost)$/.test(window.location.hostname)) return;
+
   fetch(API.health)
     .then((resp) => (resp.ok ? resp.json() : null))
     .then((info) => {
