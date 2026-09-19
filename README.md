@@ -42,6 +42,15 @@ the default), Monte Carlo maximum likelihood (MCMLE), or maximum
 pseudolikelihood (MPLE). Selection and revision use the same simulation-based
 GOF rule whichever estimator produces the fit.
 
+## Static demo
+
+<https://yidans.github.io/forge-demo/> shows the same interface without a
+server. It replays recorded runs on the five packaged networks for each
+estimator: the fit, GOF, and revision values on every stage come from actual
+runs of the pipeline (`evaluation/demo_examples/`), while the LLM prompts and
+rationales shown there are template text. The live mode below runs the real
+pipeline with an LLM.
+
 ## Requirements
 
 - Python 3.9 or newer
@@ -101,14 +110,21 @@ four nodes and caps inputs at 60 nodes and 400 edges.
 - `benchmark_datasets.R`, `stage*.R` — offline Stage 0--4 experiment pipeline
 - `consolidated_guardrails.R` — deterministic specification checks
 - `docs/input_format.md` — custom-network format
-- `evaluation/` — locked paper benchmark summary and figure reproduction
+- `evaluation/` — data behind the paper's reported numbers and the recorded
+  example runs replayed by the static demo (`evaluation/README.md`)
 - `prompts/` — saved Stage 1 specification and Stage 4 interpretation prompts
-- `scripts/` — dependency installation and data-export helpers
+  from the offline experiments
+- `scripts/` — dependency installation, data export, and `publish_pages.sh`,
+  which publishes `demo/` to the `gh-pages` branch
 
-## Offline benchmark pipeline
+## Offline experiment scripts
 
-The paper evaluation uses the offline pipeline below. Run commands from the
-repository root because the scripts use root-relative paths:
+`stage0_*.R` to `stage4_*.R` and `benchmark_datasets.R` are the offline
+experiment scripts from the development of FORGE. They run Stages 0--4 on the
+benchmark networks without the browser and are kept for reference; the
+numbers reported in the paper are summarized in `evaluation/` (see
+`evaluation/README.md`). Run them from the repository root because they use
+root-relative paths:
 
 ```bash
 Rscript stage0_load_all_datasets.R
@@ -122,18 +138,18 @@ Rscript stage3_refinement_pipeline.R
 Rscript stage4_interpretation_pipeline.R
 ```
 
-Stages that call an LLM require `OPENROUTER_API_KEY`. Full MCMLE fits can take
-substantial time on the largest networks. Stage 4 can be checked without an
-external call using:
+Stages that call an LLM require `OPENROUTER_API_KEY`. Stage 4 can be checked
+without an external call using:
 
 ```bash
 STAGE4_SKIP_LLM=1 Rscript stage4_interpretation_pipeline.R
 ```
 
-Reproduce the aggregate paper figure with:
+To regenerate the recorded example runs used by the static demo (no LLM
+call; about 25 minutes for all five networks and three estimators):
 
 ```bash
-python3 evaluation/make_baseline_improvement.py
+Rscript evaluation/demo_examples/run_all.R
 ```
 
 ## Interpretation limits
